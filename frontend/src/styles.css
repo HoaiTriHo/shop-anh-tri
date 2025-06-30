@@ -1,0 +1,150 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Import Bootstrap CSS */
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+/* Dark Theme Global Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212 !important; /* Dark background */
+  color: #ffffff !important; /* White text */
+  min-height: 100vh;
+}
+
+/* Override Bootstrap default colors for dark theme */
+.bg-light {
+  background-color: #1e1e1e !important;
+}
+
+.bg-white {
+  background-color: #23272b !important;
+}
+
+.text-dark {
+  color: #ffffff !important;
+}
+
+.text-muted {
+  color: #b0b3b8 !important;
+}
+
+/* Custom utility classes */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom card styles for dark theme */
+.product-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  background-color: #23272b !important;
+  border: 1px solid #343a40 !important;
+  color: #ffffff !important;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Custom form styles for dark theme */
+.form-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #23272b !important;
+  border: 1px solid #343a40 !important;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: #ffffff !important;
+}
+
+/* Custom navbar styles for dark theme */
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #ffc107 !important;
+}
+
+.navbar {
+  background-color: #18191a !important;
+  border-bottom: 1px solid #343a40 !important;
+}
+
+.navbar-nav .nav-link {
+  color: #ffffff !important;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ffc107 !important;
+}
+
+/* Custom button styles */
+.btn-custom {
+  border-radius: 25px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+}
+
+/* Custom alert styles for dark theme */
+.alert-custom {
+  border-radius: 10px;
+  border: none;
+  background-color: #23272b !important;
+  color: #ffffff !important;
+}
+
+/* Loading spinner */
+.spinner-border-custom {
+  width: 3rem;
+  height: 3rem;
+  color: #ffc107 !important;
+}
+
+/* Dark theme overrides for common elements */
+.card {
+  background-color: #23272b !important;
+  border: 1px solid #343a40 !important;
+  color: #ffffff !important;
+}
+
+.form-control {
+  background-color: #18191a !important;
+  border: 1px solid #343a40 !important;
+  color: #ffffff !important;
+}
+
+.form-control:focus {
+  background-color: #23272b !important;
+  border-color: #ffc107 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
+}
+
+.btn-outline-primary {
+  border-color: #ffc107 !important;
+  color: #ffc107 !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: #ffc107 !important;
+  color: #18191a !important;
+}
+
+.btn-primary {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #18191a !important;
+}
+
+.btn-primary:hover {
+  background-color: #e0a800 !important;
+  border-color: #e0a800 !important;
+  color: #18191a !important;
+}

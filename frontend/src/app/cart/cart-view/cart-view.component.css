@@ -1,0 +1,166 @@
+/* Cart View Component - Essential Styles Only */
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+  color: #fff;
+  padding: 2rem;
+}
+
+.card {
+  background: rgba(35, 39, 43, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 193, 7, 0.1);
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.card-header {
+  background: #18191a !important;
+  color: #ffc107 !important;
+  border-bottom: 1px solid rgba(255, 193, 7, 0.2);
+  border-radius: 20px 20px 0 0 !important;
+  padding: 1.5rem 2rem;
+}
+
+.card-body {
+  padding: 2rem;
+  background: rgba(35, 39, 43, 0.95);
+  color: #fff;
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.text-warning { color: #ffc107 !important; }
+.text-light { color: #fff !important; }
+.text-secondary { color: #b0b3b8 !important; }
+
+.cart-item {
+  background: #18191a;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 193, 7, 0.1);
+}
+
+.cart-item h6 { color: #ffc107; font-weight: 600; }
+
+.badge.bg-success { background: #28a745 !important; color: #fff !important; }
+.badge.bg-danger { background: #dc3545 !important; color: #fff !important; }
+.badge.bg-warning { background: #ffc107 !important; color: #18191a !important; }
+
+.input-group {
+  max-width: 100px;
+  min-width: 80px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background: rgba(40, 40, 40, 0.95);
+  border-radius: 16px;
+  border: 1.5px solid #ffc10755;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  padding: 0;
+  gap: 0;
+  margin: 0 auto;
+  flex-wrap: nowrap !important;
+}
+
+.input-group .btn {
+  min-width: 32px;
+  max-width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 1.2rem;
+  border: none;
+  background: transparent;
+  color: #ffc107;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.input-group .form-control {
+  width: 40px;
+  height: 36px;
+  padding: 0 !important;
+  font-size: 1.2rem;
+  text-align: center;
+  border: none !important;
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: none;
+  outline: none;
+  margin: 0;
+  line-height: 36px;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+.input-group .form-control::-webkit-outer-spin-button,
+.input-group .form-control::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Promo code input group - tách biệt style */
+.promo-input-group {
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: #23272b;
+  border-radius: 16px;
+  border: 2px solid #ffc10799;
+  overflow: hidden;
+}
+.promo-input-group .form-control {
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: none;
+  outline: none;
+  padding: 0.7rem 1rem;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+.promo-input-group .form-control::placeholder {
+  color: #ccc;
+  opacity: 1;
+}
+.promo-input-group .btn {
+  border-radius: 0 16px 16px 0;
+  background: #ffc107;
+  color: #23272b;
+  font-weight: 700;
+  border: none;
+  font-size: 1rem;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  min-width: 70px;
+  transition: background 0.2s, color 0.2s;
+}
+.promo-input-group .btn:hover:not(:disabled) {
+  background: #ffb300;
+  color: #18191a;
+}
+
+/* Responsive: giữ lại phần quan trọng */
+@media (max-width: 768px) {
+  .container { padding: 0.5rem; }
+  .card-body { padding: 1rem; }
+  .cart-item { padding: 1rem; }
+}

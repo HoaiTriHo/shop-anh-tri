@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+📦 Project Structure:
+- The project consists of two parts: frontend (Angular) and backend (Spring Boot), each in a separate folder: /frontend and /backend.
+- Each part must have its own Dockerfile.
+- A docker-compose.yml file must be created in the root directory to run the entire system (FE, BE, DB).
+
+🎨 Frontend (Angular):
+- Use Angular 16+.
+- Each module (auth, product, cart) must be placed in its own folder.
+- Components must be split into separate .ts, .html, and .css files.
+- Use Reactive Forms and HttpClient for API calls.
+- API calls should be made through services, not directly in components.
+
+⚙️ Backend (Spring Boot):
+- Use Spring Boot 3+ with either Gradle.
+- Classes must be organized into packages: controller, service, repository, entity, config.
+- Use JPA for MySQL connection.
+- Each entity must be defined in its own file using the @Entity annotation.
+- REST APIs must follow RESTful patterns like: /api/products, /api/orders,...
+- Controllers should not contain business logic, only call services.
+
+🔒 Security:
+- Implement JWT for user authentication.
+- Do not hardcode passwords or tokens in the code.
+
+🧪 Test & Docker:
+- Create a Dockerfile for both frontend and backend.
+- docker-compose.yml must be able to run FE, BE, and MySQL simultaneously.
+- Mock product data can be included for demo purposes if needed.
+
+⛔ Restrictions:
+- Do not use external libraries unless explicitly requested.
+- Do not combine frontend and backend in a single project structure.

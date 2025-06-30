@@ -1,0 +1,87 @@
+<!-- Checkout Page -->
+<div class="checkout-container">
+  <h2>Thanh toán đơn hàng</h2>
+
+  <!-- Error message -->
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Danh sách sản phẩm trong giỏ -->
+  <div class="cart-summary" *ngIf="cartItems.length > 0; else emptyCart">
+    <h3>Sản phẩm trong giỏ</h3>
+    <div class="cart-items-list">
+      <div class="cart-item" *ngFor="let item of cartItems">
+        <img [src]="item.product.imageUrl" alt="{{item.product.name}}" class="product-img">
+        <div class="item-info">
+          <div class="item-name">{{item.product.name}}</div>
+          <div class="item-qty">Số lượng: {{item.quantity}}</div>
+          <div class="item-price">Đơn giá: {{item.product.price | number}} đ</div>
+        </div>
+        <div class="item-total">Thành tiền: {{item.price | number}} đ</div>
+      </div>
+    </div>
+    <div class="cart-total">
+      <span>Tổng tiền:</span>
+      <span class="total-value">{{cartTotal | number}} đ</span>
+    </div>
+  </div>
+  <ng-template #emptyCart>
+    <p>Giỏ hàng của bạn đang trống.</p>
+  </ng-template>
+
+  <!-- Form thông tin giao hàng -->
+  <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="checkout-form" *ngIf="cartItems.length > 0 && !orderSuccess">
+    <h3>Thông tin giao hàng</h3>
+    <div class="form-group">
+      <label>Họ tên</label>
+      <input formControlName="name" type="text" placeholder="Nhập họ tên">
+      <div class="error" *ngIf="checkoutForm.get('name')?.invalid && checkoutForm.get('name')?.touched">Vui lòng nhập họ tên</div>
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input formControlName="email" type="email" placeholder="Nhập email">
+      <div class="error" *ngIf="checkoutForm.get('email')?.invalid && checkoutForm.get('email')?.touched">Email không hợp lệ</div>
+    </div>
+    <div class="form-group">
+      <label>Địa chỉ</label>
+      <input formControlName="address" type="text" placeholder="Nhập địa chỉ giao hàng">
+      <div class="error" *ngIf="checkoutForm.get('address')?.invalid && checkoutForm.get('address')?.touched">Vui lòng nhập địa chỉ</div>
+    </div>
+    <div class="form-group">
+      <label>Số điện thoại</label>
+      <input formControlName="phone" type="text" placeholder="Nhập số điện thoại">
+      <div class="error" *ngIf="checkoutForm.get('phone')?.invalid && checkoutForm.get('phone')?.touched">Số điện thoại không hợp lệ</div>
+    </div>
+    
+    <h3>Phương thức thanh toán</h3>
+    <div class="form-group">
+      <div class="payment-methods">
+        <div class="payment-option" *ngFor="let method of paymentMethods">
+          <input 
+            type="radio" 
+            [id]="method.value" 
+            formControlName="paymentMethod" 
+            [value]="method.value"
+            class="payment-radio">
+          <label [for]="method.value" class="payment-label">
+            {{ method.label || method.value }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-checkout" [disabled]="checkoutForm.invalid || isLoading">
+      <span *ngIf="!isLoading">Xác nhận đặt hàng</span>
+      <span *ngIf="isLoading">Đang xử lý...</span>
+    </button>
+  </form>
+
+  <!-- Thông báo thành công -->
+  <div class="order-success" *ngIf="orderSuccess">
+    <h3>Đặt hàng thành công!</h3>
+    <p>Cảm ơn bạn đã mua sắm tại Shop Anh Trí.</p>
+    <p>Đơn hàng của bạn đã được ghi nhận và sẽ được xử lý sớm nhất.</p>
+    <button class="btn-checkout" (click)="onContinueShopping()">Tiếp tục mua sắm</button>
+  </div>
+</div>

@@ -1,0 +1,103 @@
+# Docker Compose configuration for E-commerce Shop Application
+# This file orchestrates the frontend, backend, and database services
+
+version: '3.8'
+
+# Define services for the e-commerce application
+services:
+  # MySQL Database Service
+  # This service provides the database for the application
+  db:
+    image: mysql:8.0
+    container_name: shop-db
+    restart: unless-stopped
+    environment:
+      # Database configuration
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: shop
+      
+      # MySQL configuration for better performance
+      MYSQL_INITDB_SKIP_TZINFO: 1
+    ports:
+      # Expose MySQL port for external access
+      - "3306:3306"
+    volumes:
+      # Persist database data
+      - mysql_data:/var/lib/mysql
+      
+      # Custom MySQL configuration
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - shop-network
+
+  # Spring Boot Backend Service
+  # This service provides the REST API for the application
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: shop-backend
+    restart: unless-stopped
+    environment:
+      # Spring configuration
+      SPRING_MAIN_ALLOW_CIRCULAR_REFERENCES: true
+      
+      # Database connection configuration
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/shop?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      
+      # JPA configuration
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: false
+      
+      # Server configuration
+      SERVER_PORT: 8080
+      
+      # JWT configuration
+      JWT_SECRET: your-super-long-secret-key-here-make-it-at-least-64-characters-1234567890abcdef
+      JWT_EXPIRATION: 86400000
+      
+      # Logging configuration
+      LOGGING_LEVEL_COM_SHOP_BACKEND: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
+    ports:
+      # Expose backend port for external access
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - shop-network
+
+  # Angular Frontend Service
+  # This service provides the web interface for the application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    container_name: shop-frontend
+    restart: unless-stopped
+    ports:
+      # Expose frontend port for web access
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - shop-network
+
+# Define volumes for data persistence
+volumes:
+  # MySQL data volume
+  mysql_data:
+    driver: local
+
+# Define networks for service communication
+networks:
+  # Internal network for service communication
+  shop-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 

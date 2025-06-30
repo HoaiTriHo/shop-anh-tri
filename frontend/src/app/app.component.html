@@ -1,0 +1,127 @@
+<!-- E-commerce Shop Application -->
+<ng-container *ngIf="!isAdminRoute(); else adminOnly">
+  <div class="app-container">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
+      <div class="container">
+        <a class="navbar-brand fw-bold" routerLink="/">
+          <i class="fas fa-shopping-cart me-2 text-warning"></i>
+          Shop Anh Trí
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <i class="fas fa-home me-1"></i>Home
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/products" routerLinkActive="active">
+                <i class="fas fa-box me-1"></i>Products
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="isLoggedIn">
+              <a class="nav-link" routerLink="/cart" routerLinkActive="active">
+                <i class="fas fa-shopping-cart me-1"></i>Cart
+                <span class="badge bg-warning text-dark ms-1" *ngIf="cartItemCount > 0" style="color:#222 !important; background:#ffe066 !important;">{{ cartItemCount }}</span>
+              </a>
+            </li>
+          </ul>
+          
+          <ul class="navbar-nav">
+            <li class="nav-item" *ngIf="!isLoggedIn">
+              <a class="nav-link text-light" routerLink="/auth/login" routerLinkActive="active">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="!isLoggedIn">
+              <a class="nav-link text-light" routerLink="/auth/register" routerLinkActive="active">
+                <i class="fas fa-user-plus me-1"></i>Register
+              </a>
+            </li>
+            <li class="nav-item dropdown" *ngIf="isLoggedIn">
+              <a class="nav-link dropdown-toggle d-flex align-items-center text-light" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-2 text-warning"></i>
+                <span class="fw-bold">{{ username || 'Account' }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <li><h6 class="dropdown-header text-warning">Welcome, <span class="text-white">{{ username }}</span>!</h6></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-info" routerLink="/admin" *ngIf="isAdmin">
+                  <i class="fas fa-cog me-2"></i>Admin Panel
+                </a></li>
+                <li><a class="dropdown-item text-white" href="#">
+                  <i class="fas fa-user me-2"></i>Profile
+                </a></li>
+                <li><a class="dropdown-item text-white" href="#">
+                  <i class="fas fa-history me-2"></i>Order History
+                </a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="#" (click)="logout()">
+                  <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Loading Spinner -->
+      <div class="loading-overlay" *ngIf="isLoading">
+        <div class="d-flex justify-content-center align-items-center min-vh-100">
+          <div class="spinner-border text-primary spinner-border-custom" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert Messages -->
+      <div class="container mt-3" *ngIf="alertMessage">
+        <div class="alert alert-{{ alertType }} alert-dismissible fade show alert-custom" role="alert">
+          <i class="bi bi-{{ alertIcon }} me-2"></i>
+          <span class="text-white">{{ alertMessage }}</span>
+          <button type="button" class="btn-close" (click)="clearAlert()"></button>
+        </div>
+      </div>
+
+      <!-- Router Outlet -->
+      <div class="container-fluid py-4">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light mt-5 py-4 border-top border-secondary">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h5 class="text-warning">Shop Anh Trí</h5>
+            <p class="text-muted">Your trusted online shopping destination with high-quality products at competitive prices.</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <h6 class="text-warning">Contact Us</h6>
+            <p class="text-muted">
+              <i class="fas fa-phone me-2"></i><span class="text-white">0123 456 789</span><br>
+              <i class="fas fa-envelope me-2"></i><span class="text-white">info@shopanhtri.com</span>
+            </p>
+          </div>
+        </div>
+        <hr class="border-secondary">
+        <div class="text-center">
+          <p class="text-muted">&copy; 2024 <span class="text-warning">Shop Anh Trí</span>. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</ng-container>
+<ng-template #adminOnly>
+  <router-outlet></router-outlet>
+</ng-template> 

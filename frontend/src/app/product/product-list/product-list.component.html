@@ -1,0 +1,159 @@
+<div class="products-container">
+  <!-- Header with search and filters -->
+  <div class="products-header">
+    <div class="header-content">
+      <h1>Our Products</h1>
+      <p>Discover amazing products at great prices</p>
+    </div>
+    
+    <div class="search-filter-bar">
+      <!-- Search Bar -->
+      <div class="search-container">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search products..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+        >
+        <button class="search-btn" (click)="onSearch()">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+
+      <!-- Filter Button -->
+      <button class="filter-btn" (click)="toggleFilters()">
+        <i class="bi bi-funnel"></i>
+        Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Panel -->
+  <div class="filters-panel" [class.show]="showFilters">
+    <div class="filter-group">
+      <label>Category:</label>
+      <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+        <option value="">All Categories</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Clothing">Clothing</option>
+        <option value="Books">Books</option>
+        <option value="Home">Home & Garden</option>
+        <option value="Sports">Sports</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Price Range:</label>
+      <select [(ngModel)]="selectedPrice" (change)="onPriceChange()">
+        <option value="">All Prices</option>
+        <option value="0-50">$0 - $50</option>
+        <option value="50-100">$50 - $100</option>
+        <option value="100+">$100+</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Sort By:</label>
+      <select [(ngModel)]="selectedSort" (change)="onSortChange()">
+        <option value="name">Name</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+
+    <button class="clear-filters-btn" (click)="clearFilters()">
+      Clear Filters
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading products...</p>
+  </div>
+
+  <!-- Products Grid -->
+  <div *ngIf="!loading" class="product-grid">
+    <div *ngFor="let product of products" class="product-card">
+      <div class="product-image">
+        <img 
+          [src]="product.imageUrl" 
+          [alt]="product.name"
+          (error)="onImageError($event)"
+          (click)="viewProduct(product)"
+        >
+        <div class="product-overlay">
+          <button class="view-details-btn" (click)="viewProduct(product)">
+            View Details
+          </button>
+        </div>
+      </div>
+
+      <div class="product-info">
+        <h3 class="product-name" (click)="viewProduct(product)">{{ product.name }}</h3>
+        <p class="product-description">{{ product.description }}</p>
+        <div class="product-meta">
+          <span class="product-category">{{ product.category }}</span>
+          <span class="product-brand">{{ product.brand }}</span>
+        </div>
+        <div class="product-price">${{ product.price }}</div>
+        
+        <div class="product-actions">
+          <button 
+            class="add-to-cart-btn" 
+            [class.in-cart]="isInCart(product.id!)"
+            [disabled]="isAddingToCart(product.id!)"
+            (click)="addToCart(product)"
+          >
+            <span *ngIf="!isAddingToCart(product.id!) && !isInCart(product.id!)">
+              <i class="bi bi-cart-plus"></i>
+              Add to Cart
+            </span>
+            <span *ngIf="!isAddingToCart(product.id!) && isInCart(product.id!)">
+              <i class="bi bi-check"></i>
+              In Cart ({{ getCartQuantity(product.id!) }})
+            </span>
+            <span *ngIf="isAddingToCart(product.id!)">
+              <i class="bi bi-hourglass-split"></i>
+              Adding...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && totalPages > 1" class="pagination-container">
+    <nav aria-label="Product pagination">
+      <ul class="pagination">
+        <!-- Previous button -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+            Previous
+          </button>
+        </li>
+
+        <!-- Page numbers -->
+        <li *ngFor="let page of getPageNumbers()" class="page-item" [class.active]="page === currentPage">
+          <button class="page-link" (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        </li>
+
+        <!-- Next button -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            Next
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="pagination-info">
+      Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, totalItems) }} of {{ totalItems }} products
+    </div>
+  </div>
+</div>

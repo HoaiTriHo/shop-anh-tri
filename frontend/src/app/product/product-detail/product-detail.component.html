@@ -1,0 +1,128 @@
+<div class="product-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading product details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-container">
+    <div class="error-icon">⚠️</div>
+    <h2>Oops! Something went wrong</h2>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadProduct()">Try Again</button>
+  </div>
+
+  <!-- Product Details -->
+  <div *ngIf="!loading && !error && product" class="product-detail">
+    <div class="product-images">
+      <div class="main-image">
+        <img 
+          [src]="product.imageUrl" 
+          [alt]="product.name"
+          (error)="onImageError($event)"
+        >
+      </div>
+    </div>
+
+    <div class="product-info">
+      <div class="product-header">
+        <h1 class="product-name">{{ product.name }}</h1>
+        <div class="product-meta">
+          <span class="product-category">{{ product.category }}</span>
+          <span class="product-brand">{{ product.brand }}</span>
+        </div>
+      </div>
+
+      <div class="product-price">
+        <span class="price">${{ product.price }}</span>
+        <span class="stock-status" [class.in-stock]="product.stockQuantity! > 0" [class.out-of-stock]="product.stockQuantity! === 0">
+          {{ product.stockQuantity! > 0 ? 'In Stock' : 'Out of Stock' }}
+        </span>
+      </div>
+
+      <div class="product-description">
+        <h3>Description</h3>
+        <p>{{ product.description }}</p>
+      </div>
+
+      <div class="product-specs">
+        <div class="spec-item">
+          <span class="spec-label">Category:</span>
+          <span class="spec-value">{{ product.category }}</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Brand:</span>
+          <span class="spec-value">{{ product.brand }}</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Stock:</span>
+          <span class="spec-value">{{ product.stockQuantity }} units</span>
+        </div>
+      </div>
+
+      <div class="product-actions">
+        <!-- Quantity Selector -->
+        <div class="quantity-selector">
+          <label>Quantity:</label>
+          <div class="quantity-controls">
+            <button 
+              class="quantity-btn" 
+              (click)="decreaseQuantity()"
+              [disabled]="quantity <= 1"
+            >
+              -
+            </button>
+            <span class="quantity-display">{{ quantity }}</span>
+            <button 
+              class="quantity-btn" 
+              (click)="increaseQuantity()"
+              [disabled]="quantity >= product.stockQuantity!"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button 
+            class="btn btn-primary add-to-cart-btn"
+            [disabled]="addingToCart || product.stockQuantity! === 0"
+            (click)="addToCart()"
+          >
+            <span *ngIf="!addingToCart">
+              <i class="bi bi-cart-plus"></i>
+              Add to Cart
+            </span>
+            <span *ngIf="addingToCart">
+              <i class="bi bi-hourglass-split"></i>
+              Adding...
+            </span>
+          </button>
+
+          <button 
+            class="btn btn-success buy-now-btn"
+            [disabled]="addingToCart || product.stockQuantity! === 0"
+            (click)="buyNow()"
+          >
+            <span *ngIf="!addingToCart">
+              <i class="bi bi-lightning"></i>
+              Buy Now
+            </span>
+            <span *ngIf="addingToCart">
+              <i class="bi bi-hourglass-split"></i>
+              Processing...
+            </span>
+          </button>
+        </div>
+
+        <!-- Cart Status -->
+        <div *ngIf="isInCart()" class="cart-status">
+          <i class="bi bi-check-circle"></i>
+          <span>This item is in your cart ({{ getCartQuantity() }} {{ getCartQuantity() === 1 ? 'item' : 'items' }})</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

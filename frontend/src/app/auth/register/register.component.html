@@ -1,0 +1,188 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="form-container mt-5">
+        <div class="text-center mb-4">
+          <h2 class="text-success">
+            <i class="bi bi-person-plus me-2"></i>Create Account
+          </h2>
+          <p class="text-light">Join us and start shopping today!</p>
+        </div>
+
+        <!-- Error Message -->
+        <div class="alert alert-danger alert-custom" *ngIf="errorMessage">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          <span class="text-white">{{ errorMessage }}</span>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <!-- First Name Field -->
+          <div class="mb-3">
+            <label for="firstName" class="form-label text-light">
+              <i class="bi bi-person me-1"></i>First Name
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="firstName"
+              formControlName="firstName"
+              placeholder="Enter your first name"
+              [class.is-invalid]="isFieldInvalid('firstName')"
+            >
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('firstName')">
+              <span *ngIf="registerForm.get('firstName')?.errors?.['required']">First name is required.</span>
+              <span *ngIf="registerForm.get('firstName')?.errors?.['minlength']">First name must be at least 2 characters.</span>
+            </div>
+          </div>
+
+          <!-- Last Name Field -->
+          <div class="mb-3">
+            <label for="lastName" class="form-label text-light">
+              <i class="bi bi-person me-1"></i>Last Name
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="lastName"
+              formControlName="lastName"
+              placeholder="Enter your last name"
+              [class.is-invalid]="isFieldInvalid('lastName')"
+            >
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('lastName')">
+              <span *ngIf="registerForm.get('lastName')?.errors?.['required']">Last name is required.</span>
+              <span *ngIf="registerForm.get('lastName')?.errors?.['minlength']">Last name must be at least 2 characters.</span>
+            </div>
+          </div>
+
+          <!-- Username Field -->
+          <div class="mb-3">
+            <label for="username" class="form-label text-light">
+              <i class="bi bi-person me-1"></i>Username
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="username"
+              formControlName="username"
+              placeholder="Choose a username"
+              [class.is-invalid]="isFieldInvalid('username')"
+            >
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('username')">
+              <span *ngIf="registerForm.get('username')?.errors?.['required']">Username is required.</span>
+              <span *ngIf="registerForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters.</span>
+              <span *ngIf="registerForm.get('username')?.errors?.['maxlength']">Username must be less than 20 characters.</span>
+            </div>
+          </div>
+
+          <!-- Email Field -->
+          <div class="mb-3">
+            <label for="email" class="form-label text-light">
+              <i class="bi bi-envelope me-1"></i>Email Address
+            </label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              [class.is-invalid]="isFieldInvalid('email')"
+            >
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+              <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required.</span>
+              <span *ngIf="registerForm.get('email')?.errors?.['email']">Please enter a valid email address.</span>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="mb-3">
+            <label for="password" class="form-label text-light">
+              <i class="bi bi-lock me-1"></i>Password
+            </label>
+            <div class="input-group">
+              <input 
+                [type]="showPassword ? 'text' : 'password'" 
+                class="form-control" 
+                id="password"
+                formControlName="password"
+                placeholder="Create a password"
+                [class.is-invalid]="isFieldInvalid('password')"
+              >
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button"
+                (click)="togglePassword()"
+              >
+                <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('password')">
+              <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</span>
+              <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters.</span>
+            </div>
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label text-light">
+              <i class="bi bi-lock-fill me-1"></i>Confirm Password
+            </label>
+            <div class="input-group">
+              <input 
+                [type]="showConfirmPassword ? 'text' : 'password'" 
+                class="form-control" 
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                placeholder="Confirm your password"
+                [class.is-invalid]="isFieldInvalid('confirmPassword') || isPasswordMismatch()"
+              >
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button"
+                (click)="toggleConfirmPassword()"
+              >
+                <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('confirmPassword') || isPasswordMismatch()">
+              <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Please confirm your password.</span>
+              <span *ngIf="isPasswordMismatch()">Passwords do not match.</span>
+            </div>
+          </div>
+
+          <!-- Terms and Conditions -->
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="agreeToTerms" formControlName="agreeToTerms">
+            <label class="form-check-label text-light" for="agreeToTerms">
+              I agree to the <a href="#" class="text-decoration-none text-success">Terms and Conditions</a> and 
+              <a href="#" class="text-decoration-none text-success">Privacy Policy</a>
+            </label>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('agreeToTerms')">
+              You must agree to the terms and conditions.
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid">
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-custom"
+              [disabled]="registerForm.invalid || isLoading"
+            >
+              <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+              <i class="bi bi-person-plus me-2" *ngIf="!isLoading"></i>
+              {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+            </button>
+          </div>
+        </form>
+
+        <!-- Links -->
+        <div class="text-center mt-4">
+          <p class="mb-0 text-light">
+            Already have an account? 
+            <a routerLink="/login" class="text-decoration-none text-success">Sign in here</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
