@@ -69,6 +69,8 @@ services:
       - db
     networks:
       - shop-network
+    volumes:
+      - ./uploads:/app/uploads
 
   # Angular Frontend Service
   # This service provides the web interface for the application

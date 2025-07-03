@@ -1,0 +1,388 @@
+/* Dashboard container với nền đen HOÀN TOÀN */
+.dashboard-container {
+  background: #1a1a1a !important;
+  min-height: 100vh !important;
+  padding: 24px !important;
+  color: #ffffff !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Dashboard header với username */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #404040;
+}
+
+.dashboard-header h1 {
+  color: #ffffff !important;
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.username {
+  color: #38bdf8 !important;
+  font-weight: 600;
+  font-size: 1.1em;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #38bdf8;
+}
+
+/* Đảm bảo toàn bộ body và html cũng đen */
+:host {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  display: block !important;
+  min-height: 100vh !important;
+}
+
+/* Override Bootstrap nếu có */
+.dashboard-container * {
+  color: inherit !important;
+}
+
+/* Tổng quan: Card số liệu nhanh - GRADIENT ĐẸP */
+.summary-cards {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.summary-card {
+  flex: 1 1 180px;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px rgba(56,189,248,0.10), 0 1.5px 8px rgba(0,0,0,0.13);
+  padding: 24px 16px;
+  text-align: center;
+  min-width: 160px;
+  border: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  transition: opacity 0.3s ease;
+}
+.summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(56,189,248,0.20), 0 3px 12px rgba(0,0,0,0.15);
+}
+.summary-card:hover::before {
+  opacity: 0.2;
+}
+
+.summary-card.orders { 
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%) !important;
+  color: white !important;
+}
+.summary-card.revenue { 
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%) !important;
+  color: white !important;
+}
+.summary-card.customers { 
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%) !important;
+  color: white !important;
+}
+.summary-card.products { 
+  background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%) !important;
+  color: white !important;
+}
+
+.card-title { 
+  font-size: 1.1em; 
+  color: rgba(255,255,255,0.9) !important; 
+  margin-bottom: 8px; 
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+.card-value { 
+  font-size: 2.2em; 
+  font-weight: bold; 
+  color: #ffffff !important; 
+  position: relative;
+  z-index: 1;
+}
+
+/* Section headers */
+.chart-section, .status-section, .top-products-section, .recent-orders-section {
+  margin-bottom: 32px;
+}
+.chart-section h3, .status-section h3, .top-products-section h3, .recent-orders-section h3 {
+  color: #ffffff !important;
+  font-size: 1.4em;
+  margin-bottom: 16px;
+  font-weight: 600;
+  border-bottom: 2px solid #404040;
+  padding-bottom: 8px;
+}
+
+/* Biểu đồ doanh thu - NỀN ĐEN THỰC SỰ */
+.chart-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  height: 180px;
+  background: #181A20 !important;
+  padding: 18px 12px 0 12px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.bar-group { text-align: center; flex: 1; }
+.bar-label { font-size: 0.95em; margin-bottom: 6px; color: #b0b0b0 !important; }
+.bar-outer {
+  width: 28px;
+  height: 120px;
+  background: #333 !important;
+  border-radius: 8px;
+  margin: 0 auto 4px auto;
+  display: flex;
+  align-items: flex-end;
+}
+.bar-inner {
+  width: 100%;
+  background: linear-gradient(180deg, #38bdf8 60%, #2563eb 100%) !important;
+  border-radius: 8px 8px 0 0;
+  transition: height 0.4s;
+}
+.bar-value { font-size: 0.95em; color: #ffffff !important; }
+
+/* Trạng thái đơn hàng - BADGES NHƯ TRANG ORDER */
+.status-list {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.status-item {
+  background: #2a2a2a !important;
+  border-radius: 20px;
+  padding: 12px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  min-width: 120px;
+  text-align: center;
+  border: 1px solid #444;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.status-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.status-label { 
+  font-weight: 600; 
+  color: #ffffff !important; 
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.status-value { 
+  font-size: 1.4em; 
+  font-weight: bold; 
+  color: #ffffff !important; 
+}
+
+/* Status colors như trang order */
+.status-item.pending .status-label { color: #ffc107 !important; }
+.status-item.confirmed .status-label { color: #17a2b8 !important; }
+.status-item.processing .status-label { color: #fd7e14 !important; }
+.status-item.shipping .status-label { color: #6f42c1 !important; }
+.status-item.delivered .status-label { color: #28a745 !important; }
+.status-item.cancelled .status-label { color: #dc3545 !important; }
+
+/* Top sản phẩm bán chạy - NỀN ĐEN THỰC SỰ */
+.top-products-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #181A20 !important;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  border: 1px solid #333;
+}
+.top-products-table th, .top-products-table td {
+  padding: 16px 12px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+.top-products-table th { 
+  background: #23242b !important; 
+  color: #38bdf8 !important; 
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 1.1rem;
+}
+.top-products-table tr {
+  background: #181A20 !important;
+  transition: all 0.2s ease;
+}
+.top-products-table tr:hover {
+  background: #23242b !important;
+  transform: scale(1.01);
+  box-shadow: 0 4px 16px rgba(56,189,248,0.15);
+}
+.top-products-table td {
+  color: #f1f1f1 !important;
+  border: none;
+  border-bottom: 1px solid #333;
+  vertical-align: middle;
+}
+.product-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #444;
+}
+
+/* Đơn hàng mới nhất - NỀN ĐEN THỰC SỰ */
+.recent-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #181A20 !important;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  border: 1px solid #333;
+}
+.recent-orders-table th, .recent-orders-table td {
+  padding: 16px 12px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+.recent-orders-table th { 
+  background: #23242b !important; 
+  color: #28a745 !important; 
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 1.1rem;
+}
+.recent-orders-table tr {
+  background: #181A20 !important;
+  transition: all 0.2s ease;
+}
+.recent-orders-table tr:hover {
+  background: #23242b !important;
+  transform: scale(1.01);
+  box-shadow: 0 4px 16px rgba(56,189,248,0.15);
+}
+.recent-orders-table td {
+  color: #f1f1f1 !important;
+  border: none;
+  border-bottom: 1px solid #333;
+  vertical-align: middle;
+}
+
+/* Status badges trong bảng */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status-pending {
+  background: #ffc107 !important;
+  color: #000 !important;
+}
+
+.status-confirmed {
+  background: #17a2b8 !important;
+  color: white !important;
+}
+
+.status-processing {
+  background: #fd7e14 !important;
+  color: white !important;
+}
+
+.status-shipping {
+  background: #6f42c1 !important;
+  color: white !important;
+}
+
+.status-delivered {
+  background: #28a745 !important;
+  color: white !important;
+}
+
+.status-cancelled {
+  background: #dc3545 !important;
+  color: white !important;
+}
+
+/* Loading & error */
+.loading, .error {
+  text-align: center;
+  font-size: 1.2em;
+  margin: 40px 0;
+  color: #b0b0b0 !important;
+}
+.error { color: #f44336 !important; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .dashboard-container {
+    padding: 16px !important;
+  }
+  .summary-cards { 
+    flex-direction: column; 
+    gap: 12px; 
+  }
+  .chart-bar { 
+    gap: 8px; 
+  }
+  .status-list { 
+    gap: 8px; 
+  }
+  .top-products-table, .recent-orders-table {
+    font-size: 0.9em;
+  }
+}
+
+/* Animation cho cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.summary-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+.summary-card:nth-child(1) { animation-delay: 0.1s; }
+.summary-card:nth-child(2) { animation-delay: 0.2s; }
+.summary-card:nth-child(3) { animation-delay: 0.3s; }
+.summary-card:nth-child(4) { animation-delay: 0.4s; } 

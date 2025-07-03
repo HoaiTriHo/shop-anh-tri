@@ -1,4 +1,47 @@
 <div class="admin-layout">
-  <!-- Có thể thêm sidebar/topbar riêng ở đây nếu muốn -->
-  <router-outlet></router-outlet>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Logo area -->
+    <div class="logo-area">
+      <h2><i class="fas fa-store"></i> Admin Panel</h2>
+    </div>
+    
+    <!-- Navigation menu -->
+    <nav class="nav-menu">
+      <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+        <i class="fas fa-chart-line"></i> Dashboard
+      </a>
+      <a routerLink="/admin/products" routerLinkActive="active" class="nav-item">
+        <i class="fas fa-box"></i> Quản lý sản phẩm
+      </a>
+      <a routerLink="/admin/orders" routerLinkActive="active" class="nav-item">
+        <i class="fas fa-shopping-cart"></i> Quản lý đơn hàng
+      </a>
+    </nav>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <button class="sidebar-toggle" (click)="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1>Admin Dashboard</h1>
+      </div>
+      
+      <div class="user-info">
+        <span class="username">{{ currentUser?.username || 'Admin' }}</span>
+        <button class="logout-btn" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i> Đăng xuất
+        </button>
+      </div>
+    </header>
+
+    <!-- Content area -->
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div> 

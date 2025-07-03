@@ -29,4 +29,5 @@ public class ProductDto {
     private String brand;
     private Integer stockQuantity;
     private boolean active;
+    private java.time.LocalDateTime createdAt;
 } 

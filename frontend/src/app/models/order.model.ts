@@ -2,26 +2,37 @@ import { Product } from './product.model';
 
 export interface OrderItem {
   id?: number;
-  product: Product;
+  productId: number;
+  productName: string;
+  productImageUrl?: string;
   quantity: number;
-  price: number;
+  unitPrice: number;
+  subtotal: number;
 }
 
 export interface Order {
   id?: number;
   userId: number;
-  items: OrderItem[];
-  totalAmount: number;
-  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  customerName?: string;
+  customerEmail?: string;
   shippingAddress: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  customerPhone?: string;
+  totalPrice: number;
+  orderDate?: string;
+  status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPING' | 'DELIVERED' | 'CANCELLED';
+  paymentMethod?: string;
+  paymentStatus?: string;
+  orderItems: OrderItem[];
 }
 
 export interface CreateOrderRequest {
-  items: Array<{
+  customerName?: string;
+  customerEmail?: string;
+  shippingAddress: string;
+  customerPhone?: string;
+  paymentMethod?: string;
+  cartItems: Array<{
     productId: number;
     quantity: number;
   }>;
-  shippingAddress: string;
 } 

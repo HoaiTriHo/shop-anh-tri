@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST Controller for Order operations
@@ -88,15 +89,25 @@ public class OrderController {
     }
 
     /**
-     * Get all orders (admin only)
+     * Get all orders with pagination, status filter, and sorting (admin only)
      * Accessible by ADMIN role only
      * 
-     * @return List of all orders
+     * @param page Page number (0-based, default: 0)
+     * @param size Page size (default: 10)
+     * @param status Order status filter (optional)
+     * @param sort Sort option (e.g. orderDate,desc)
+     * @return Paginated orders response
      */
     @GetMapping("/admin/all")
-    public ResponseEntity<List<OrderDto>> getAllOrders() {
-        List<OrderDto> orders = orderService.getAllOrders();
-        return ResponseEntity.ok(orders);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false, defaultValue = "orderDate,desc") String sort) {
+        
+        Map<String, Object> response = orderService.getAllOrdersWithPagination(page, size, status, sort);
+        return ResponseEntity.ok(response);
     }
 
     /**

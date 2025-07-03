@@ -2,7 +2,10 @@ package com.shop.backend.repository;
 
 import com.shop.backend.entity.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -37,4 +40,16 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
      * @param orderId The ID of the order
      */
     void deleteByOrderId(Long orderId);
+
+    /**
+     * Truy vấn top sản phẩm bán chạy nhất (theo số lượng)
+     * Trả về: Object[]{Product, Long quantity}
+     */
+    @Query("SELECT oi.product, SUM(oi.quantity) as totalQty FROM OrderItem oi GROUP BY oi.product ORDER BY totalQty DESC")
+    List<Object[]> findTopProductsByQuantity(Pageable pageable);
+
+    // Tiện ích: lấy top N sản phẩm bán chạy
+    default List<Object[]> findTopProductsByQuantity(int limit) {
+        return findTopProductsByQuantity(org.springframework.data.domain.PageRequest.of(0, limit));
+    }
 } 

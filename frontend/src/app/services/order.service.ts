@@ -47,10 +47,14 @@ export class OrderService {
   }
 
   /**
-   * Get all orders (Admin only)
+   * Get all orders with pagination, status filter, and sort (Admin only)
    */
-  getAllOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.API_URL}/admin/all`);
+  getAllOrders(page: number = 0, size: number = 10, status?: string, sort: string = 'orderDate,desc'): Observable<any> {
+    let url = `${this.API_URL}/admin/all?page=${page}&size=${size}&sort=${sort}`;
+    if (status && status !== 'ALL') {
+      url += `&status=${status}`;
+    }
+    return this.http.get<any>(url);
   }
 
   /**

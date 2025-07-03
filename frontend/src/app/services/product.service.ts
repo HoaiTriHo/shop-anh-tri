@@ -31,6 +31,9 @@ export class ProductService {
    * Create new product (Admin only)
    */
   createProduct(product: ProductCreateRequest, imageFile?: File): Observable<Product> {
+    console.log('ProductService: Creating product with data:', product);
+    console.log('ProductService: Image file:', imageFile);
+    
     const formData = new FormData();
     formData.append('product', JSON.stringify(product));
     
@@ -38,7 +41,9 @@ export class ProductService {
       formData.append('image', imageFile);
     }
     
-    return this.http.post<Product>(this.API_URL, formData);
+    console.log('ProductService: FormData created, sending request...');
+    return this.http.post<Product>(this.API_URL, formData)
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -84,26 +89,23 @@ export class ProductService {
   }
 
   /**
-   * Get products with pagination, search, and filter support
-   * @param options Object with page, size, query, category, price, sort
+   * Get products with pagination, search, filter, and sort
    */
-  getProducts(options: {
-    page?: number,
-    size?: number,
-    query?: string,
-    category?: string,
-    price?: string,
-    sort?: string
-  } = {}): Observable<{ products: Product[], total: number }> {
-    let params = new HttpParams();
-    if (options.page !== undefined) params = params.set('page', options.page.toString());
-    if (options.size !== undefined) params = params.set('size', options.size.toString());
-    if (options.query) params = params.set('query', options.query);
-    if (options.category) params = params.set('category', options.category);
-    if (options.price) params = params.set('price', options.price);
-    if (options.sort) params = params.set('sort', options.sort);
-    return this.http.get<{ products: Product[], total: number }>(this.API_URL, { params })
-      .pipe(catchError(this.handleError));
+  getProducts(params: { page?: number; size?: number; query?: string; category?: string; price?: string; sort?: string }): Observable<any> {
+    let url = `${this.API_URL}?page=${params.page ?? 0}&size=${params.size ?? 10}`;
+    if (params.query) {
+      url += `&query=${encodeURIComponent(params.query)}`;
+    }
+    if (params.category) {
+      url += `&category=${encodeURIComponent(params.category)}`;
+    }
+    if (params.price) {
+      url += `&price=${encodeURIComponent(params.price)}`;
+    }
+    if (params.sort) {
+      url += `&sort=${params.sort}`;
+    }
+    return this.http.get<any>(url);
   }
 
   private handleError(error: any) {

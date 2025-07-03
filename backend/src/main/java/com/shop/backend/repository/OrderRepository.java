@@ -2,6 +2,7 @@ package com.shop.backend.repository;
 
 import com.shop.backend.entity.Order;
 import com.shop.backend.entity.User;
+import com.shop.backend.entity.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -144,4 +145,23 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      * @return Optional containing the order if found and belongs to the user
      */
     Optional<Order> findByIdAndUser(Long id, User user);
+
+    /**
+     * Find orders by status
+     * This method is used for filtering orders by their status
+     * 
+     * @param status Order status to filter by
+     * @return List of orders with the specified status
+     */
+    List<Order> findByStatus(com.shop.backend.entity.OrderStatus status);
+
+    /**
+     * Lấy 5 đơn hàng mới nhất
+     */
+    List<Order> findTop5ByOrderByOrderDateDesc();
+
+    /**
+     * Đếm số lượng đơn theo trạng thái
+     */
+    long countByStatus(OrderStatus status);
 } 

@@ -42,11 +42,30 @@ public class CartService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
+        
+        // Check if product is active
+        if (!product.isActive()) {
+            throw new RuntimeException("Product is not available for purchase");
+        }
+        
+        // Check stock availability
+        if (product.getStockQuantity() < request.getQuantity()) {
+            throw new RuntimeException("Insufficient stock. Available: " + product.getStockQuantity() + ", Requested: " + request.getQuantity());
+        }
+        
         Cart cart = cartRepository.findByUser(user).orElseGet(() -> createCartForUser(user));
         Optional<CartItem> existingItemOpt = cartItemRepository.findByCartAndProduct(cart, product);
+        
         if (existingItemOpt.isPresent()) {
             CartItem item = existingItemOpt.get();
-            item.setQuantity(item.getQuantity() + request.getQuantity());
+            int newQuantity = item.getQuantity() + request.getQuantity();
+            
+            // Check total quantity against stock
+            if (product.getStockQuantity() < newQuantity) {
+                throw new RuntimeException("Insufficient stock. Available: " + product.getStockQuantity() + ", Total in cart: " + newQuantity);
+            }
+            
+            item.setQuantity(newQuantity);
             cartItemRepository.save(item);
         } else {
             CartItem item = new CartItem();
@@ -68,7 +87,14 @@ public class CartService {
         Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new RuntimeException("Cart not found"));
         CartItem item = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
+        
         if (item.getCart().getId().equals(cart.getId())) {
+            // Check stock availability
+            Product product = item.getProduct();
+            if (product.getStockQuantity() < quantity) {
+                throw new RuntimeException("Insufficient stock. Available: " + product.getStockQuantity() + ", Requested: " + quantity);
+            }
+            
             item.setQuantity(quantity);
             cartItemRepository.save(item);
             updateCartTotal(cart);
@@ -123,7 +149,8 @@ public class CartService {
                 item.getProduct().getCategory(),
                 item.getProduct().getBrand(),
                 item.getProduct().getStockQuantity(),
-                item.getProduct().isActive()
+                item.getProduct().isActive(),
+                null
         );
         return new CartItemDto(item.getId(), productDto, item.getQuantity(), item.getPrice());
     }

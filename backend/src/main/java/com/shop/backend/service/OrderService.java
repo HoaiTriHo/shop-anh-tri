@@ -13,8 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Service class for Order business logic
@@ -217,7 +220,7 @@ public class OrderService {
         orderDto.setOrderDate(order.getOrderDate());
         orderDto.setStatus(order.getStatus().name());
         orderDto.setPaymentMethod(order.getPaymentMethod());
-        orderDto.setPaymentStatus(order.getPaymentStatus().name());
+        orderDto.setPaymentStatus(order.getPaymentStatus() != null ? order.getPaymentStatus().name() : "UNKNOWN");
 
         // Convert order items
         List<OrderDto.OrderItemDto> orderItemDtos = order.getOrderItems()
@@ -245,5 +248,95 @@ public class OrderService {
         dto.setUnitPrice(orderItem.getUnitPrice());
         dto.setSubtotal(orderItem.getSubtotal());
         return dto;
+    }
+
+    /**
+     * Get all orders with pagination, status filter, and sorting (admin only)
+     * 
+     * @param page Page number (0-based)
+     * @param size Page size
+     * @param status Order status filter (optional)
+     * @param sort Sort option (e.g. orderDate,desc)
+     * @return Map containing orders, pagination info
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Object> getAllOrdersWithPagination(int page, int size, String status, String sort) {
+        List<Order> allOrders;
+        
+        // Filter by status if provided
+        if (status != null && !status.isEmpty()) {
+            try {
+                OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
+                allOrders = orderRepository.findByStatus(orderStatus);
+            } catch (IllegalArgumentException e) {
+                // If invalid status, return empty list
+                allOrders = new ArrayList<>();
+            }
+        } else {
+            allOrders = orderRepository.findAll();
+        }
+        
+        // Sort
+        String sortField = "orderDate";
+        boolean desc = true;
+        if (sort != null && !sort.isEmpty()) {
+            String[] parts = sort.split(",");
+            sortField = parts[0];
+            if (parts.length > 1) {
+                desc = parts[1].equalsIgnoreCase("desc");
+            }
+        }
+        final String finalSortField = sortField;
+        final boolean finalDesc = desc;
+        allOrders.sort((o1, o2) -> {
+            int cmp = 0;
+            switch (finalSortField) {
+                case "orderDate":
+                    cmp = o1.getOrderDate().compareTo(o2.getOrderDate());
+                    break;
+                case "customerName":
+                    cmp = o1.getCustomerName().compareToIgnoreCase(o2.getCustomerName());
+                    break;
+                case "status":
+                    cmp = o1.getStatus().name().compareTo(o2.getStatus().name());
+                    break;
+                case "totalPrice":
+                    cmp = o1.getTotalPrice().compareTo(o2.getTotalPrice());
+                    break;
+                case "id":
+                    cmp = o1.getId().compareTo(o2.getId());
+                    break;
+                default:
+                    cmp = o1.getOrderDate().compareTo(o2.getOrderDate());
+            }
+            return finalDesc ? -cmp : cmp;
+        });
+        
+        // Calculate pagination
+        int totalElements = allOrders.size();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        
+        // Apply pagination
+        int startIndex = page * size;
+        int endIndex = Math.min(startIndex + size, totalElements);
+        
+        List<Order> paginatedOrders = allOrders.subList(startIndex, endIndex);
+        
+        // Convert to DTOs
+        List<OrderDto> orderDtos = paginatedOrders.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        
+        // Build response
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", orderDtos);
+        response.put("totalElements", totalElements);
+        response.put("totalPages", totalPages);
+        response.put("currentPage", page);
+        response.put("pageSize", size);
+        response.put("hasNext", page < totalPages - 1);
+        response.put("hasPrevious", page > 0);
+        
+        return response;
     }
 } 

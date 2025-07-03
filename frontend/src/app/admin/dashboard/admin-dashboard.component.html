@@ -1,0 +1,107 @@
+<div class="dashboard-container" *ngIf="!loading && !error">
+  <!-- Header với username -->
+  <div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <div class="user-info">
+      <span class="username">Welcome, {{ currentUser?.username || 'Admin' }}</span>
+    </div>
+  </div>
+
+  <!-- Tổng quan: Số liệu nhanh -->
+  <div class="summary-cards">
+    <div class="card summary-card orders">
+      <div class="card-title">Tổng đơn hàng</div>
+      <div class="card-value">{{ summary.totalOrders || 0 }}</div>
+    </div>
+    <div class="card summary-card revenue">
+      <div class="card-title">Tổng doanh thu</div>
+      <div class="card-value">{{ summary.totalRevenue | number:'1.0-0' }} ₫</div>
+    </div>
+    <div class="card summary-card customers">
+      <div class="card-title">Khách hàng</div>
+      <div class="card-value">{{ summary.totalCustomers || 0 }}</div>
+    </div>
+    <div class="card summary-card products">
+      <div class="card-title">Sản phẩm</div>
+      <div class="card-value">{{ summary.totalProducts || 0 }}</div>
+    </div>
+  </div>
+
+  <!-- Biểu đồ doanh thu 7 ngày gần nhất -->
+  <div class="chart-section">
+    <h3>Doanh thu 7 ngày gần nhất</h3>
+    <div class="chart-bar">
+      <div class="bar-group" *ngFor="let day of revenueByDay">
+        <div class="bar-label">{{ day.date }}</div>
+        <div class="bar-outer">
+          <div class="bar-inner" [style.height.%]="getRevenuePercent(day.revenue)"></div>
+        </div>
+        <div class="bar-value">{{ day.revenue | number:'1.0-0' }} ₫</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trạng thái đơn hàng -->
+  <div class="status-section">
+    <h3>Trạng thái đơn hàng</h3>
+    <div class="status-list">
+      <div class="status-item" 
+           *ngFor="let statusKey of getOrderStatusKeys()" 
+           [ngClass]="getStatusItemClass(statusKey)">
+        <span class="status-label">{{ statusKey }}</span>
+        <span class="status-value">{{ orderStatusStats[statusKey] || 0 }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top sản phẩm bán chạy -->
+  <div class="top-products-section">
+    <h3>Top sản phẩm bán chạy</h3>
+    <table class="top-products-table">
+      <tr>
+        <th>Ảnh</th>
+        <th>Tên sản phẩm</th>
+        <th>Số lượng bán</th>
+      </tr>
+      <tr *ngFor="let p of topProducts">
+        <td><img [src]="p.imageUrl" alt="{{ p.name }}" class="product-img"></td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.quantity }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Đơn hàng mới nhất -->
+  <div class="recent-orders-section">
+    <h3>Đơn hàng mới nhất</h3>
+    <table class="recent-orders-table">
+      <tr>
+        <th>Mã đơn</th>
+        <th>Khách hàng</th>
+        <th>Ngày đặt</th>
+        <th>Trạng thái</th>
+        <th>Tổng tiền</th>
+      </tr>
+      <tr *ngFor="let o of recentOrders">
+        <td>{{ o.id }}</td>
+        <td>{{ o.customerName || o.user?.username || 'N/A' }}</td>
+        <td>{{ o.orderDate | date:'short' }}</td>
+        <td>
+          <span class="status-badge" [ngClass]="getStatusBadgeClass(o.status)">
+            {{ o.status }}
+          </span>
+        </td>
+        <td>{{ o.totalPrice | number:'1.0-0' }} ₫</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading">Đang tải dashboard...</div>
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<!--
+  Ghi chú:
+  - Các hàm getRevenuePercent và orderStatusKeys sẽ được định nghĩa trong component TS.
+  - Giao diện sẽ được làm đẹp ở file CSS.
+--> 

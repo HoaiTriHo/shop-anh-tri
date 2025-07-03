@@ -16,14 +16,14 @@
         <div class="item-info">
           <div class="item-name">{{item.product.name}}</div>
           <div class="item-qty">Số lượng: {{item.quantity}}</div>
-          <div class="item-price">Đơn giá: {{item.product.price | number}} đ</div>
+          <div class="item-price">Đơn giá: {{item.product.price | number}} ₫</div>
         </div>
-        <div class="item-total">Thành tiền: {{item.price | number}} đ</div>
+        <div class="item-total">Thành tiền: {{item.price | number}} ₫</div>
       </div>
     </div>
     <div class="cart-total">
       <span>Tổng tiền:</span>
-      <span class="total-value">{{cartTotal | number}} đ</span>
+      <span class="total-value">{{cartTotal | number}} ₫</span>
     </div>
   </div>
   <ng-template #emptyCart>

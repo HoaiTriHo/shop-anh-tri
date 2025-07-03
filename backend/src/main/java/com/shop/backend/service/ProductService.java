@@ -99,11 +99,18 @@ public class ProductService {
      * @return Created product DTO
      */
     public ProductDto createProduct(ProductDto productDto, MultipartFile imageFile) {
+        // Validate stock quantity
+        if (productDto.getStockQuantity() < 0) {
+            throw new RuntimeException("Stock quantity cannot be negative");
+        }
+        
         Product product = convertToEntity(productDto);
+        
         if (imageFile != null && !imageFile.isEmpty()) {
             String imageUrl = saveImage(imageFile);
             product.setImageUrl(imageUrl);
         }
+        
         Product saved = productRepository.save(product);
         return convertToDto(saved);
     }
@@ -118,15 +125,27 @@ public class ProductService {
     public ProductDto updateProduct(Long id, ProductDto productDto, MultipartFile imageFile) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
+        
+        // Validate stock quantity
+        if (productDto.getStockQuantity() < 0) {
+            throw new RuntimeException("Stock quantity cannot be negative");
+        }
+        
         // Update fields
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
+        product.setCategory(productDto.getCategory());
+        product.setBrand(productDto.getBrand());
+        product.setStockQuantity(productDto.getStockQuantity());
+        product.setActive(productDto.isActive());
+        
         // Only update image if a new file is provided
         if (imageFile != null && !imageFile.isEmpty()) {
             String imageUrl = saveImage(imageFile);
             product.setImageUrl(imageUrl);
         }
+        
         Product saved = productRepository.save(product);
         return convertToDto(saved);
     }
@@ -264,7 +283,8 @@ public class ProductService {
                 product.getCategory(),
                 product.getBrand(),
                 product.getStockQuantity(),
-                product.isActive()
+                product.isActive(),
+                product.getCreatedAt()
         );
     }
 
@@ -275,7 +295,7 @@ public class ProductService {
      * @return Product entity
      */
     private Product convertToEntity(ProductDto productDto) {
-        return new Product(
+        Product product = new Product(
                 productDto.getName(),
                 productDto.getDescription(),
                 productDto.getPrice(),
@@ -283,6 +303,8 @@ public class ProductService {
                 productDto.getCategory(),
                 productDto.getBrand()
         );
+        product.setActive(productDto.isActive());
+        return product;
     }
 
     /**
@@ -292,20 +314,36 @@ public class ProductService {
      */
     private String saveImage(MultipartFile file) {
         try {
-            // Ensure uploads directory exists
+            // Ensure uploads directory exists with proper permissions
             File uploadDir = new File(UPLOAD_DIR);
             if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
+                boolean created = uploadDir.mkdirs();
+                if (!created) {
+                    throw new RuntimeException("Failed to create uploads directory");
+                }
             }
+            
+            // Check if directory is writable
+            if (!uploadDir.canWrite()) {
+                throw new RuntimeException("Uploads directory is not writable");
+            }
+            
             // Generate unique filename
             String ext = getFileExtension(file.getOriginalFilename());
             String filename = UUID.randomUUID() + (ext.isEmpty() ? "" : "." + ext);
             Path filePath = Paths.get(UPLOAD_DIR, filename);
-            Files.write(filePath, file.getBytes());
+            
+            // Write file with proper error handling
+            try {
+                Files.write(filePath, file.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to write image file: " + e.getMessage(), e);
+            }
+            
             // Return public URL path
             return "/uploads/" + filename;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save image", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save image: " + e.getMessage(), e);
         }
     }
 

@@ -35,7 +35,7 @@
       </div>
 
       <div class="product-price">
-        <span class="price">${{ product.price }}</span>
+        <span class="price">{{ product.price | number:'1.0-0' }} ₫</span>
         <span class="stock-status" [class.in-stock]="product.stockQuantity! > 0" [class.out-of-stock]="product.stockQuantity! === 0">
           {{ product.stockQuantity! > 0 ? 'In Stock' : 'Out of Stock' }}
         </span>

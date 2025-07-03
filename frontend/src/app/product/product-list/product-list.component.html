@@ -98,7 +98,7 @@
           <span class="product-category">{{ product.category }}</span>
           <span class="product-brand">{{ product.brand }}</span>
         </div>
-        <div class="product-price">${{ product.price }}</div>
+        <div class="product-price">{{ product.price | number:'1.0-0' }} ₫</div>
         
         <div class="product-actions">
           <button 

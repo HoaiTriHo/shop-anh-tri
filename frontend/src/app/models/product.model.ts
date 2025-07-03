@@ -8,7 +8,7 @@ export interface Product {
   brand?: string;
   stockQuantity: number;
   active: boolean;
-  createdAt?: Date;
+  createdAt?: string;
   updatedAt?: Date;
   isWishlisted?: boolean;
 }
