@@ -24,6 +24,9 @@ export class AppComponent implements OnInit, OnDestroy {
   alertType = 'info';
   alertIcon = 'info-circle';
 
+  toastMessage = '';
+  toastTimeout: any;
+
   // Subscription for auth changes
   private authSubscription?: Subscription;
 
@@ -94,7 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   logout(): void {
     this.authService.logout();
-    this.showAlert('Successfully logged out', 'success', 'check-circle');
+    this.showAlert('Đã đăng xuất thành công', 'success', 'check-circle');
     
     // Navigate to home page after logout
     this.router.navigate(['/']);
@@ -147,5 +150,22 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isAdminRoute(): boolean {
     return this.router.url.startsWith('/admin');
+  }
+
+  showToast(message: string): void {
+    this.toastMessage = message;
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+    }
+    this.toastTimeout = setTimeout(() => {
+      this.toastMessage = '';
+    }, 2500);
+  }
+
+  closeToast(): void {
+    this.toastMessage = '';
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+    }
   }
 }

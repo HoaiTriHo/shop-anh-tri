@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
 import { Product } from '../../models/product.model';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-product-detail',
@@ -22,7 +23,8 @@ export class ProductDetailComponent implements OnInit {
     private router: Router,
     private productService: ProductService,
     private cartService: CartService,
-    private authService: AuthService
+    private authService: AuthService,
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
   ngOnInit(): void {
@@ -73,8 +75,11 @@ export class ProductDetailComponent implements OnInit {
       next: (success) => {
         this.addingToCart = false;
         if (success) {
-          console.log(`Added ${this.product!.name} to cart successfully`);
-          // You can show a success message here
+          // Show toast notification
+          const appRoot = this.document.querySelector('app-root') as any;
+          if (appRoot && appRoot.showToast) {
+            appRoot.showToast('Đã thêm vào giỏ hàng');
+          }
         } else {
           console.error('Failed to add product to cart');
           // You can show an error message to user here

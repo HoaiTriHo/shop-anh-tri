@@ -37,7 +37,7 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   selectedImage: File | null = null;
   imagePreview: string | null = null;
 
-  sortField = 'id';
+  sortField = 'createdAt';
   sortDirection: 'asc' | 'desc' = 'desc';
 
   constructor(
@@ -198,14 +198,12 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   addProduct(productData: any): void {
     console.log('Adding product with data:', productData);
     console.log('Selected image:', this.selectedImage);
-    
     this.isLoading = true;
     this.productService.createProduct(productData, this.selectedImage || undefined).subscribe({
       next: (newProduct) => {
         console.log('Product created successfully:', newProduct);
-        this.products.unshift(newProduct);
-        this.onSearch();
         this.closeForm();
+        this.loadProducts(); // Reload list, show newest first
         this.isLoading = false;
       },
       error: (err) => {
@@ -332,7 +330,39 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   }
 
   formatDate(dateString: string | undefined): string {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleString('vi-VN');
+    if (!dateString) return 'Không có ngày';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Ngày không hợp lệ';
+    }
+    // Cộng thêm 7 tiếng (25200000 ms)
+    const vnDate = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+    const day = vnDate.getDate().toString().padStart(2, '0');
+    const month = (vnDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = vnDate.getFullYear();
+    const hours = vnDate.getHours().toString().padStart(2, '0');
+    const minutes = vnDate.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  }
+
+  // Định dạng số tiền thành chuỗi có phân tách hàng nghìn
+  formatCurrency(value: any): string {
+    if (value === null || value === undefined || value === '') return '';
+    // Chỉ lấy số
+    const numberValue = Number((value + '').replace(/[^\d]/g, ''));
+    if (isNaN(numberValue)) return '';
+    return numberValue.toLocaleString('vi-VN');
+  }
+
+  // Xử lý khi nhập giá: chỉ cho nhập số, tự động format, lưu vào form là số
+  onPriceInput(event: any): void {
+    const input = event.target as HTMLInputElement;
+    // Lấy số từ chuỗi nhập vào
+    const rawValue = input.value.replace(/[^\d]/g, '');
+    const numberValue = rawValue ? parseInt(rawValue, 10) : '';
+    // Cập nhật lại value đã format vào input
+    input.value = this.formatCurrency(numberValue);
+    // Cập nhật vào form (dạng số)
+    this.productForm.get('price')?.setValue(numberValue, { emitEvent: false });
   }
 }

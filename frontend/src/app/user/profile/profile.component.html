@@ -1,0 +1,138 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h2><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</h2>
+    <p class="text-muted">Quản lý thông tin tài khoản của bạn</p>
+  </div>
+
+  <!-- Success/Error Message -->
+  <div *ngIf="message" class="alert" [ngClass]="messageType === 'success' ? 'alert-success' : 'alert-danger'">
+    <i class="fas" [ngClass]="messageType === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'"></i>
+    {{ message }}
+  </div>
+
+  <div class="profile-content">
+    <!-- User Info Display -->
+    <div class="user-info-card" *ngIf="!isEditing">
+      <div class="user-avatar">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      
+      <div class="user-details">
+        <h3>{{ currentUser?.firstName || '' }} {{ currentUser?.lastName || '' }}</h3>
+        <p class="username">@{{ currentUser?.username || 'Chưa cập nhật' }}</p>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <label><i class="fas fa-envelope"></i> Email:</label>
+            <span>{{ currentUser?.email || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="info-item">
+            <label><i class="fas fa-phone"></i> Số điện thoại:</label>
+            <span>{{ currentUser?.phoneNumber || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="info-item">
+            <label><i class="fas fa-map-marker-alt"></i> Địa chỉ:</label>
+            <span>{{ currentUser?.address || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="info-item">
+            <label><i class="fas fa-calendar"></i> Ngày tham gia:</label>
+            <span>{{ currentUser?.createdAt ? (currentUser.createdAt | date:'dd/MM/yyyy') : 'Không có thông tin' }}</span>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" (click)="toggleEdit()">
+          <i class="fas fa-edit"></i> Chỉnh sửa thông tin
+        </button>
+      </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="edit-form-card" *ngIf="isEditing">
+      <h3><i class="fas fa-edit"></i> Chỉnh sửa thông tin</h3>
+      
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Họ *</label>
+            <input 
+              type="text" 
+              id="firstName"
+              formControlName="firstName"
+              placeholder="Nhập họ"
+              [class.is-invalid]="isFieldInvalid('firstName')"
+            >
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('firstName')">
+              <span *ngIf="profileForm.get('firstName')?.errors?.['required']">Vui lòng nhập họ.</span>
+              <span *ngIf="profileForm.get('firstName')?.errors?.['minlength']">Họ tối thiểu 2 ký tự.</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="lastName">Tên *</label>
+            <input 
+              type="text" 
+              id="lastName"
+              formControlName="lastName"
+              placeholder="Nhập tên"
+              [class.is-invalid]="isFieldInvalid('lastName')"
+            >
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('lastName')">
+              <span *ngIf="profileForm.get('lastName')?.errors?.['required']">Vui lòng nhập tên.</span>
+              <span *ngIf="profileForm.get('lastName')?.errors?.['minlength']">Tên tối thiểu 2 ký tự.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input 
+            type="email" 
+            id="email"
+            formControlName="email"
+            placeholder="Nhập email"
+            [class.is-invalid]="isFieldInvalid('email')"
+          >
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+            <span *ngIf="profileForm.get('email')?.errors?.['required']">Vui lòng nhập email.</span>
+            <span *ngIf="profileForm.get('email')?.errors?.['email']">Email không hợp lệ.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Số điện thoại</label>
+          <input 
+            type="tel" 
+            id="phone"
+            formControlName="phone"
+            placeholder="Nhập số điện thoại"
+            [class.is-invalid]="isFieldInvalid('phone')"
+          >
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('phone')">
+            <span *ngIf="profileForm.get('phone')?.errors?.['pattern']">Số điện thoại không hợp lệ.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Địa chỉ</label>
+          <textarea 
+            id="address"
+            formControlName="address"
+            placeholder="Nhập địa chỉ"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="toggleEdit()" [disabled]="isLoading">
+            <i class="fas fa-times"></i> Hủy
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || isLoading">
+            <span class="spinner-border spinner-border-sm me-2" *ngIf="isLoading"></span>
+            <i class="fas fa-save" *ngIf="!isLoading"></i>
+            {{ isLoading ? 'Đang lưu...' : 'Lưu thay đổi' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

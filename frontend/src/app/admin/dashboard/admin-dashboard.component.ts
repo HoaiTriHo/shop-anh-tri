@@ -21,6 +21,10 @@ export class AdminDashboardComponent implements OnInit {
   loading = true;
   error = '';
   currentUser: any = null;
+  exporting = false;
+  exportFromDate: string = '';
+  exportToDate: string = '';
+  exportMessage: string = '';
 
   constructor(
     private http: HttpClient,
@@ -121,5 +125,59 @@ export class AdminDashboardComponent implements OnInit {
       'CANCELLED': 'cancelled'
     };
     return statusClassMap[statusKey] || 'pending';
+  }
+
+  /**
+   * Format ngày đặt hàng theo định dạng Việt Nam
+   */
+  formatOrderDate(dateString: string): string {
+    if (!dateString) return 'Không có ngày';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Ngày không hợp lệ';
+    }
+    // Cộng thêm 7 tiếng (25200000 ms)
+    const vnDate = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+    const day = vnDate.getDate().toString().padStart(2, '0');
+    const month = (vnDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = vnDate.getFullYear();
+    const hours = vnDate.getHours().toString().padStart(2, '0');
+    const minutes = vnDate.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  }
+
+  /**
+   * Export báo cáo doanh thu ra Excel
+   */
+  onExportReport() {
+    this.exporting = true;
+    this.exportMessage = '';
+    const params: any = {};
+    if (this.exportFromDate) params.fromDate = this.exportFromDate;
+    if (this.exportToDate) params.toDate = this.exportToDate;
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const base = environment.apiUrl + '/api/admin/dashboard/export-report';
+    this.http.get(base, { headers, params, responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        // Tạo tên file
+        const from = this.exportFromDate || 'all';
+        const to = this.exportToDate || 'now';
+        const filename = `shop-report-${from}-${to}.xlsx`;
+        // Tải file
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.exporting = false;
+        this.exportMessage = 'Xuất báo cáo thành công!';
+      },
+      error: (err) => {
+        this.exporting = false;
+        this.exportMessage = 'Lỗi xuất báo cáo!';
+      }
+    });
   }
 } 

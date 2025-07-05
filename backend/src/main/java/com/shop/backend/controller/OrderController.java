@@ -56,19 +56,31 @@ public class OrderController {
     }
 
     /**
-     * Get all orders for the current user
+     * Get all orders for the current user with filtering, sorting and pagination
      * Accessible by USER role only
      * 
-     * @return List of user's orders
+     * @param status Order status filter (optional: PENDING, CONFIRMED, PROCESSING, SHIPPING, DELIVERED, CANCELLED)
+     * @param startDate Start date filter (optional: yyyy-MM-dd)
+     * @param endDate End date filter (optional: yyyy-MM-dd)
+     * @param sort Sort option (optional: orderDate,desc or orderDate,asc)
+     * @param page Page number (0-based, default: 0)
+     * @param size Page size (default: 10)
+     * @return Paginated orders response with metadata
      */
     @GetMapping("/my-orders")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<List<OrderDto>> getMyOrders() {
+    public ResponseEntity<Map<String, Object>> getMyOrders(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false, defaultValue = "orderDate,desc") String sort,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         
-        List<OrderDto> orders = orderService.getOrdersByUsername(username);
-        return ResponseEntity.ok(orders);
+        Map<String, Object> response = orderService.getOrdersByUsernameWithFilterAndPagination(username, status, startDate, endDate, sort, page, size);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -96,6 +108,7 @@ public class OrderController {
      * @param size Page size (default: 10)
      * @param status Order status filter (optional)
      * @param sort Sort option (e.g. orderDate,desc)
+     * @param keyword Keyword filter (optional)
      * @return Paginated orders response
      */
     @GetMapping("/admin/all")
@@ -104,9 +117,9 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false, defaultValue = "orderDate,desc") String sort) {
-        
-        Map<String, Object> response = orderService.getAllOrdersWithPagination(page, size, status, sort);
+            @RequestParam(required = false, defaultValue = "orderDate,desc") String sort,
+            @RequestParam(required = false) String keyword) {
+        Map<String, Object> response = orderService.getAllOrdersWithPagination(page, size, status, sort, keyword);
         return ResponseEntity.ok(response);
     }
 
@@ -134,11 +147,30 @@ public class OrderController {
      */
     @PutMapping("/admin/{orderId}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<OrderDto> updateOrderStatus(
+    public ResponseEntity<Map<String, Object>> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestParam OrderStatus status) {
-        OrderDto updatedOrder = orderService.updateOrderStatus(orderId, status);
-        return ResponseEntity.ok(updatedOrder);
+        try {
+            OrderDto updatedOrder = orderService.updateOrderStatus(orderId, status);
+            Map<String, Object> response = Map.of(
+                "success", true,
+                "message", "Cập nhật trạng thái đơn hàng thành công",
+                "order", updatedOrder
+            );
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            Map<String, Object> response = Map.of(
+                "success", false,
+                "message", e.getMessage()
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            Map<String, Object> response = Map.of(
+                "success", false,
+                "message", "Không thể cập nhật trạng thái đơn hàng: " + e.getMessage()
+            );
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     /**
@@ -173,6 +205,43 @@ public class OrderController {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Cancel order by user (only if status is PENDING)
+     * Accessible by USER role only
+     * User can only cancel their own orders
+     * 
+     * @param orderId Order ID
+     * @return Success response or error message
+     */
+    @PutMapping("/{orderId}/cancel")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Map<String, Object>> cancelOrder(@PathVariable Long orderId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        
+        try {
+            OrderDto cancelledOrder = orderService.cancelOrderByUser(orderId, username);
+            Map<String, Object> response = Map.of(
+                "success", true,
+                "message", "Đơn hàng đã được hủy thành công",
+                "order", cancelledOrder
+            );
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            Map<String, Object> response = Map.of(
+                "success", false,
+                "message", e.getMessage()
+            );
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            Map<String, Object> response = Map.of(
+                "success", false,
+                "message", "Không thể hủy đơn hàng: " + e.getMessage()
+            );
+            return ResponseEntity.badRequest().body(response);
         }
     }
 } 

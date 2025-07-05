@@ -1,9 +1,13 @@
 package com.shop.backend.service;
 
+import com.shop.backend.dto.UserProfileDto;
 import com.shop.backend.entity.User;
 import com.shop.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,5 +96,39 @@ public class UserService {
      */
     public boolean emailExists(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public UserProfileDto getCurrentUserProfile() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        UserProfileDto dto = new UserProfileDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setAddress(user.getAddress());
+        dto.setRole(user.getRole());
+        dto.setCreatedAt(user.getCreatedAt() != null ? user.getCreatedAt().toString() : null);
+        return dto;
+    }
+
+    public UserProfileDto updateCurrentUserProfile(UserProfileDto profileDto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        // Chỉ cho phép update các trường cơ bản
+        user.setFirstName(profileDto.getFirstName());
+        user.setLastName(profileDto.getLastName());
+        user.setEmail(profileDto.getEmail());
+        user.setPhoneNumber(profileDto.getPhoneNumber());
+        user.setAddress(profileDto.getAddress());
+        userRepository.save(user);
+        // Trả về profile mới
+        return getCurrentUserProfile();
     }
 } 

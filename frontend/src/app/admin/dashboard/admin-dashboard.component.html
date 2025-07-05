@@ -7,6 +7,19 @@
     </div>
   </div>
 
+  <!-- Export báo cáo doanh thu -->
+  <div class="export-report-section" style="margin: 24px 0; padding: 16px; background: #23242b; border-radius: 8px;">
+    <h3 style="margin-bottom: 12px;">Export báo cáo doanh thu</h3>
+    <form class="export-form" (ngSubmit)="onExportReport()" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <label>Từ ngày:</label>
+      <input type="date" [(ngModel)]="exportFromDate" name="fromDate" style="margin-right: 8px;" />
+      <label>Đến ngày:</label>
+      <input type="date" [(ngModel)]="exportToDate" name="toDate" style="margin-right: 8px;" />
+      <button type="submit" class="btn-export" [disabled]="exporting" style="padding: 8px 18px; background: #1976d2; color: #fff; border: none; border-radius: 6px; font-weight: 600;">{{ exporting ? 'Đang xuất...' : 'Export Excel' }}</button>
+    </form>
+    <div class="export-message" *ngIf="exportMessage" style="margin-top: 8px; color: #4caf50;">{{ exportMessage }}</div>
+  </div>
+
   <!-- Tổng quan: Số liệu nhanh -->
   <div class="summary-cards">
     <div class="card summary-card orders">
@@ -85,7 +98,7 @@
       <tr *ngFor="let o of recentOrders">
         <td>{{ o.id }}</td>
         <td>{{ o.customerName || o.user?.username || 'N/A' }}</td>
-        <td>{{ o.orderDate | date:'short' }}</td>
+        <td>{{ formatOrderDate(o.orderDate) }}</td>
         <td>
           <span class="status-badge" [ngClass]="getStatusBadgeClass(o.status)">
             {{ o.status }}

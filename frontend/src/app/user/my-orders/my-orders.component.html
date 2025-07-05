@@ -1,0 +1,148 @@
+<div class="my-orders-container">
+  <h2><i class="fas fa-shopping-bag"></i> Đơn hàng của tôi</h2>
+  
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label><i class="fas fa-filter"></i> Trạng thái:</label>
+        <select [(ngModel)]="selectedStatus" (change)="onFilterChange()">
+          <option *ngFor="let status of statusOptions" [value]="status.value">
+            {{ status.label }}
+          </option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label><i class="fas fa-calendar"></i> Từ ngày:</label>
+        <input type="date" [(ngModel)]="startDate" (change)="onFilterChange()">
+      </div>
+      
+      <div class="filter-group">
+        <label><i class="fas fa-calendar"></i> Đến ngày:</label>
+        <input type="date" [(ngModel)]="endDate" (change)="onFilterChange()">
+      </div>
+      
+      <div class="filter-group">
+        <label><i class="fas fa-sort"></i> Sắp xếp:</label>
+        <select [(ngModel)]="sortBy" (change)="onFilterChange()">
+          <option value="orderDate,desc">Mới nhất trước</option>
+          <option value="orderDate,asc">Cũ nhất trước</option>
+        </select>
+      </div>
+      
+      <button class="btn-clear" (click)="clearFilters()">
+        <i class="fas fa-times"></i> Xóa bộ lọc
+      </button>
+    </div>
+  </div>
+  
+  <div *ngIf="loading" class="loading">
+    <i class="fas fa-spinner fa-spin"></i> Đang tải...
+  </div>
+  
+  <div *ngIf="error" class="error">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && orders.length === 0" class="empty-state">
+    <i class="fas fa-shopping-cart"></i>
+    <p>Không tìm thấy đơn hàng nào.</p>
+    <a routerLink="/products" class="btn-shop">Mua sắm ngay</a>
+  </div>
+  
+  <div *ngIf="!loading && orders.length > 0" class="orders-list">
+    <div *ngFor="let order of orders" class="order-row">
+      <div class="order-main-info">
+        <div class="order-id">
+          <i class="fas fa-receipt"></i>
+          #{{ order.id }}
+        </div>
+        <div class="order-date">
+          <i class="fas fa-calendar"></i>
+          {{ formatOrderDate(order.orderDate) }}
+        </div>
+        <div class="order-status">
+          <span class="status-badge" [class]="getStatusClass(order.status)">
+            {{ getStatusLabel(order.status) }}
+          </span>
+        </div>
+        <div class="order-total">
+          <strong>{{ order.totalPrice | number:'1.0-0' }} ₫</strong>
+        </div>
+        <div class="order-items-count">
+          <i class="fas fa-box"></i>
+          {{ order.orderItems.length }} sản phẩm
+        </div>
+        <!-- Cancel Order Button - Only show for PENDING orders -->
+        <div class="order-actions" *ngIf="order.status === 'PENDING'">
+          <button 
+            class="btn-cancel-order" 
+            (click)="cancelOrder(order.id!)"
+            [disabled]="cancellingOrderId === order.id">
+            <i class="fas fa-times"></i>
+            {{ cancellingOrderId === order.id ? 'Đang hủy...' : 'Hủy đơn hàng' }}
+          </button>
+        </div>
+      </div>
+      
+      <div class="order-items-section">
+        <div class="items-scroll-container">
+          <div class="items-row">
+            <div *ngFor="let item of order.orderItems" class="item-compact">
+              <div class="item-image">
+                <img [src]="item.productImageUrl || 'assets/images/placeholder.jpg'" [alt]="item.productName">
+              </div>
+              <div class="item-info-compact">
+                <div class="item-name">{{ item.productName }}</div>
+                <div class="item-details-compact">
+                  <span class="quantity">x{{ item.quantity }}</span>
+                  <span class="price">{{ item.unitPrice | number:'1.0-0' }} ₫</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Pagination -->
+  <div *ngIf="!loading && orders.length > 0" class="pagination-section">
+    <div class="pagination-info">
+      Hiển thị {{ (currentPage * pageSize) + 1 }} - {{ Math.min((currentPage + 1) * pageSize, totalElements) }} 
+      trong tổng số {{ totalElements }} đơn hàng
+      <span class="debug-info">(Trang {{ currentPage + 1 }}/{{ totalPages }})</span>
+    </div>
+    
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <button 
+        class="btn-page" 
+        [disabled]="currentPage === 0"
+        (click)="onPageChange(currentPage - 1)">
+        <i class="fas fa-chevron-left"></i> Trước
+      </button>
+      
+      <div class="page-numbers">
+        <button 
+          *ngFor="let page of getPageNumbers()" 
+          class="btn-page-number"
+          [class.active]="page === currentPage"
+          (click)="onPageChange(page)">
+          {{ page + 1 }}
+        </button>
+      </div>
+      
+      <button 
+        class="btn-page" 
+        [disabled]="currentPage >= totalPages - 1"
+        (click)="onPageChange(currentPage + 1)">
+        Sau <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+    
+    <div class="pagination-info" *ngIf="totalPages <= 1">
+      Hiển thị tất cả {{ totalElements }} đơn hàng
+    </div>
+  </div>
+</div>

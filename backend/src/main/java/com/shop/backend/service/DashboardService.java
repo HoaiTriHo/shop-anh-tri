@@ -10,13 +10,17 @@ import com.shop.backend.repository.OrderRepository;
 import com.shop.backend.repository.ProductRepository;
 import com.shop.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Service tổng hợp số liệu cho dashboard admin.
@@ -159,5 +163,97 @@ public class DashboardService {
             }
         }
         return result;
+    }
+
+    /**
+     * Export báo cáo doanh thu ra file Excel (theo khoảng thời gian)
+     * @param fromDate ngày bắt đầu (có thể null)
+     * @param toDate ngày kết thúc (có thể null)
+     * @return byte[] file Excel
+     */
+    public byte[] exportReportExcel(LocalDate fromDate, LocalDate toDate) {
+        // Lấy tất cả đơn hàng theo khoảng thời gian
+        List<Order> orders = orderRepository.findAll();
+        if (fromDate != null) {
+            orders = orders.stream().filter(o -> !o.getOrderDate().toLocalDate().isBefore(fromDate)).toList();
+        }
+        if (toDate != null) {
+            orders = orders.stream().filter(o -> !o.getOrderDate().toLocalDate().isAfter(toDate)).toList();
+        }
+        // Tổng doanh thu
+        BigDecimal totalRevenue = orders.stream()
+                .filter(o -> o.getStatus() == OrderStatus.DELIVERED || o.getStatus() == OrderStatus.CONFIRMED)
+                .map(Order::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Số đơn hàng
+        int totalOrders = orders.size();
+        // Tạo workbook
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Báo cáo doanh thu");
+            int rowIdx = 0;
+            // Tiêu đề lớn
+            Row titleRow = sheet.createRow(rowIdx++);
+            Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue("BÁO CÁO DOANH THU SHOP APP");
+            CellStyle titleStyle = workbook.createCellStyle();
+            Font titleFont = workbook.createFont();
+            titleFont.setBold(true); titleFont.setFontHeightInPoints((short) 16);
+            titleStyle.setFont(titleFont);
+            titleCell.setCellStyle(titleStyle);
+            sheet.addMergedRegion(new org.apache.poi.ss.util.CellRangeAddress(0,0,0,8));
+            // Thông tin thời gian
+            Row infoRow = sheet.createRow(rowIdx++);
+            infoRow.createCell(0).setCellValue("Từ ngày:");
+            infoRow.createCell(1).setCellValue(fromDate != null ? fromDate.toString() : "---");
+            infoRow.createCell(2).setCellValue("Đến ngày:");
+            infoRow.createCell(3).setCellValue(toDate != null ? toDate.toString() : "---");
+            // Tổng quan
+            Row summaryRow = sheet.createRow(rowIdx++);
+            summaryRow.createCell(0).setCellValue("Tổng số đơn hàng:");
+            summaryRow.createCell(1).setCellValue(totalOrders);
+            summaryRow.createCell(2).setCellValue("Tổng doanh thu:");
+            summaryRow.createCell(3).setCellValue(totalRevenue.doubleValue());
+            rowIdx++;
+            // Header chi tiết đơn hàng
+            Row header = sheet.createRow(rowIdx++);
+            String[] headers = {"Mã đơn", "Ngày đặt", "Khách hàng", "Email", "SĐT", "Địa chỉ", "Trạng thái", "Tổng tiền", "Sản phẩm"};
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = header.createCell(i);
+                cell.setCellValue(headers[i]);
+                CellStyle style = workbook.createCellStyle();
+                Font font = workbook.createFont(); font.setBold(true); style.setFont(font);
+                cell.setCellStyle(style);
+            }
+            // Dữ liệu từng đơn hàng
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            for (Order order : orders) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(order.getId());
+                row.createCell(1).setCellValue(order.getOrderDate().format(dtf));
+                row.createCell(2).setCellValue(order.getCustomerName());
+                row.createCell(3).setCellValue(order.getCustomerEmail());
+                row.createCell(4).setCellValue(order.getCustomerPhone());
+                row.createCell(5).setCellValue(order.getShippingAddress());
+                row.createCell(6).setCellValue(order.getStatus().name());
+                row.createCell(7).setCellValue(order.getTotalPrice().doubleValue());
+                // Sản phẩm: tên (x số lượng)
+                StringBuilder products = new StringBuilder();
+                for (OrderItem item : order.getOrderItems()) {
+                    products.append(item.getProduct().getName())
+                        .append(" (x").append(item.getQuantity()).append(")");
+                    products.append(", ");
+                }
+                if (products.length() > 2) products.setLength(products.length() - 2);
+                row.createCell(8).setCellValue(products.toString());
+            }
+            // Auto size
+            for (int i = 0; i < headers.length; i++) sheet.autoSizeColumn(i);
+            // Xuất ra byte[]
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi xuất báo cáo Excel: " + e.getMessage(), e);
+        }
     }
 } 

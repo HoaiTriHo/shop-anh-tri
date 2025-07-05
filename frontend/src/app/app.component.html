@@ -17,18 +17,23 @@
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
               <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-                <i class="fas fa-home me-1"></i>Home
+                <i class="fas fa-home me-1"></i>Trang chủ
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" routerLink="/products" routerLinkActive="active">
-                <i class="fas fa-box me-1"></i>Products
+                <i class="fas fa-box me-1"></i>Sản phẩm
               </a>
             </li>
             <li class="nav-item" *ngIf="isLoggedIn">
-              <a class="nav-link" routerLink="/cart" routerLinkActive="active">
-                <i class="fas fa-shopping-cart me-1"></i>Cart
-                <span class="badge bg-warning text-dark ms-1" *ngIf="cartItemCount > 0" style="color:#222 !important; background:#ffe066 !important;">{{ cartItemCount }}</span>
+              <a class="nav-link d-flex align-items-center gap-1" routerLink="/cart" routerLinkActive="active">
+                <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                <span *ngIf="cartItemCount > 0" class="cart-badge-inline ms-1">{{ cartItemCount }}</span>
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="isLoggedIn">
+              <a class="nav-link" routerLink="/my-orders" routerLinkActive="active">
+                <i class="fas fa-shopping-bag"></i> Đơn hàng của tôi
               </a>
             </li>
           </ul>
@@ -36,34 +41,34 @@
           <ul class="navbar-nav">
             <li class="nav-item" *ngIf="!isLoggedIn">
               <a class="nav-link text-light" routerLink="/auth/login" routerLinkActive="active">
-                <i class="fas fa-sign-in-alt me-1"></i>Login
+                <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
               </a>
             </li>
             <li class="nav-item" *ngIf="!isLoggedIn">
               <a class="nav-link text-light" routerLink="/auth/register" routerLinkActive="active">
-                <i class="fas fa-user-plus me-1"></i>Register
+                <i class="fas fa-user-plus me-1"></i>Đăng ký
               </a>
             </li>
             <li class="nav-item dropdown" *ngIf="isLoggedIn">
               <a class="nav-link dropdown-toggle d-flex align-items-center text-light" href="#" role="button" data-bs-toggle="dropdown">
                 <i class="fas fa-user-circle me-2 text-warning"></i>
-                <span class="fw-bold">{{ username || 'Account' }}</span>
+                <span class="fw-bold">{{ username || 'Tài khoản' }}</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-dark">
-                <li><h6 class="dropdown-header text-warning">Welcome, <span class="text-white">{{ username }}</span>!</h6></li>
+                <li><h6 class="dropdown-header text-warning">Chào mừng, <span class="text-white">{{ username }}</span>!</h6></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-info" routerLink="/admin" *ngIf="isAdmin">
-                  <i class="fas fa-cog me-2"></i>Admin Panel
+                  <i class="fas fa-cog me-2"></i>Quản trị
                 </a></li>
-                <li><a class="dropdown-item text-white" href="#">
-                  <i class="fas fa-user me-2"></i>Profile
+                <li><a class="dropdown-item text-white" routerLink="/profile">
+                  <i class="fas fa-user me-2"></i>Hồ sơ
                 </a></li>
-                <li><a class="dropdown-item text-white" href="#">
-                  <i class="fas fa-history me-2"></i>Order History
+                <li><a class="dropdown-item text-white" routerLink="/my-orders">
+                  <i class="fas fa-history me-2"></i>Lịch sử đơn hàng
                 </a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-danger" href="#" (click)="logout()">
-                  <i class="fas fa-sign-out-alt me-2"></i>Logout
+                  <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
                 </a></li>
               </ul>
             </li>
@@ -78,7 +83,7 @@
       <div class="loading-overlay" *ngIf="isLoading">
         <div class="d-flex justify-content-center align-items-center min-vh-100">
           <div class="spinner-border text-primary spinner-border-custom" role="status">
-            <span class="visually-hidden">Loading...</span>
+            <span class="visually-hidden">Đang tải...</span>
           </div>
         </div>
       </div>
@@ -96,6 +101,18 @@
       <div class="container-fluid py-4">
         <router-outlet></router-outlet>
       </div>
+
+      <!-- Toast Notification -->
+      <div *ngIf="toastMessage" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1200;">
+        <div class="toast show align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              <i class="fas fa-check-circle me-2"></i>{{ toastMessage }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="closeToast()"></button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Footer -->
@@ -104,10 +121,10 @@
         <div class="row">
           <div class="col-md-6">
             <h5 class="text-warning">Shop Anh Trí</h5>
-            <p class="text-muted">Your trusted online shopping destination with high-quality products at competitive prices.</p>
+            <p class="text-muted">Điểm đến mua sắm trực tuyến đáng tin cậy với sản phẩm chất lượng cao và giá cả cạnh tranh.</p>
           </div>
           <div class="col-md-6 text-md-end">
-            <h6 class="text-warning">Contact Us</h6>
+            <h6 class="text-warning">Liên hệ</h6>
             <p class="text-muted">
               <i class="fas fa-phone me-2"></i><span class="text-white">0123 456 789</span><br>
               <i class="fas fa-envelope me-2"></i><span class="text-white">info@shopanhtri.com</span>
@@ -116,7 +133,7 @@
         </div>
         <hr class="border-secondary">
         <div class="text-center">
-          <p class="text-muted">&copy; 2024 <span class="text-warning">Shop Anh Trí</span>. All rights reserved.</p>
+          <p class="text-muted">&copy; 2024 <span class="text-warning">Shop Anh Trí</span>. Bảo lưu mọi quyền.</p>
         </div>
       </div>
     </footer>

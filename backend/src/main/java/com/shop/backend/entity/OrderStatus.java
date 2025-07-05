@@ -10,7 +10,8 @@ public enum OrderStatus {
     PROCESSING("Đang xử lý"),       // Order is being processed
     SHIPPING("Đang giao hàng"),     // Order is being shipped
     DELIVERED("Đã giao hàng"),      // Order delivered to customer
-    CANCELLED("Đã hủy");           // Order cancelled
+    CANCELLED("Admin hủy"),         // Order cancelled by admin
+    CUSTOMER_CANCELLED("Khách hàng hủy"); // Order cancelled by customer
     
     private final String displayName;
     

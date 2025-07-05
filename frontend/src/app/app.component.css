@@ -58,6 +58,9 @@
   background-color: #2d2d2d;
   border: 1px solid #404040;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  z-index: 999999 !important;
+  position: fixed !important;
+  pointer-events: auto !important;
 }
 
 .dropdown-item {
@@ -221,10 +224,12 @@ main {
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   margin-top: 0.5rem;
-  z-index: 9999 !important;
-  position: absolute !important;
+  z-index: 999999 !important;
+  position: fixed !important;
   min-width: 200px;
   animation: slideInDown 0.3s ease-out;
+  pointer-events: auto !important;
+  transform: none !important;
 }
 
 .dropdown-menu.show {
@@ -438,4 +443,57 @@ footer .text-muted {
   right: auto !important;
   transform: none !important;
   z-index: 9999 !important;
+}
+
+.cart-badge {
+  top: 0.2rem !important;
+  left: 1.5rem;
+  transform: none;
+  font-size: 0.95rem;
+  min-width: 22px;
+  min-height: 22px;
+  height: 22px;
+  width: 22px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ffb300;
+  color: #fff;
+  font-weight: 700;
+  border: 2px solid #222;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.cart-badge-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffb300;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  min-width: 22px;
+  min-height: 22px;
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  border: 2px solid #222;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  margin-left: 4px;
+  vertical-align: middle;
+  pointer-events: none;
+}
+
+/* Ẩn badge cũ nếu còn tồn tại */
+.cart-badge { display: none !important; }
+
+.dropdown-menu,
+.dropdown-menu-dark {
+  z-index: 999999 !important;
+  position: fixed !important;
+  pointer-events: auto !important;
 }

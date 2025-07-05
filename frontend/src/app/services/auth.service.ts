@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User, LoginRequest, RegisterRequest, AuthResponse } from '../models/user.model';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../environments/environment';
 
 interface JwtPayload {
   sub: string;
@@ -15,7 +16,7 @@ interface JwtPayload {
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:8080/api/auth';
+  private readonly API_URL = `${environment.apiUrl}/api/auth`;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private userRole: string | null = null;
@@ -170,5 +171,19 @@ export class AuthService {
     } catch (e) {
       this.userRole = null;
     }
+  }
+
+  /**
+   * Lấy thông tin profile user hiện tại
+   */
+  getProfile() {
+    return this.http.get<any>(`${environment.apiUrl}/api/users/profile`);
+  }
+
+  /**
+   * Cập nhật thông tin profile user hiện tại
+   */
+  updateProfile(profile: any) {
+    return this.http.put<any>(`${environment.apiUrl}/api/users/profile`, profile);
   }
 }

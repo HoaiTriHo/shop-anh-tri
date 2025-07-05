@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { Product } from '../../models/product.model';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-product-list',
@@ -36,7 +37,8 @@ export class ProductListComponent implements OnInit {
     private productService: ProductService,
     private cartService: CartService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
   ngOnInit(): void {
@@ -169,9 +171,11 @@ export class ProductListComponent implements OnInit {
       next: (success: boolean) => {
         this.addingToCart[product.id!] = false;
         if (success) {
-          // Show success message (you can implement a toast service)
-          console.log(`Added ${product.name} to cart successfully`);
-          // You can add a visual feedback here like a toast notification
+          // Show toast notification
+          const appRoot = this.document.querySelector('app-root') as any;
+          if (appRoot && appRoot.showToast) {
+            appRoot.showToast('Đã thêm vào giỏ hàng');
+          }
         } else {
           console.error('Failed to add product to cart');
           // You can show an error message to user here
@@ -245,5 +249,12 @@ export class ProductListComponent implements OnInit {
     const img = event.target as HTMLImageElement;
     img.src = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&crop=center';
     img.alt = 'Product image not available';
+  }
+
+  /**
+   * Route tới trang giỏ hàng
+   */
+  goToCart(): void {
+    this.router.navigate(['/cart']);
   }
 }

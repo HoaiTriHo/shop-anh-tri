@@ -33,12 +33,15 @@ export class OrderManagementComponent implements OnInit {
     { value: 'PROCESSING', label: 'Đang xử lý' },
     { value: 'SHIPPING', label: 'Đang giao hàng' },
     { value: 'DELIVERED', label: 'Đã giao hàng' },
-    { value: 'CANCELLED', label: 'Đã hủy' }
+    { value: 'CANCELLED', label: 'Admin hủy' },
+    { value: 'CUSTOMER_CANCELLED', label: 'Khách hàng hủy' }
   ];
   selectedStatusFilter = 'ALL';
 
   sortField = 'orderDate';
   sortDirection: 'asc' | 'desc' = 'desc';
+
+  keyword: string = '';
 
   constructor(private orderService: OrderService) {}
 
@@ -49,7 +52,7 @@ export class OrderManagementComponent implements OnInit {
   loadOrders(): void {
     this.isLoading = true;
     const sortParam = `${this.sortField},${this.sortDirection}`;
-    this.orderService.getAllOrders(this.currentPage, this.pageSize, this.selectedStatusFilter, sortParam).subscribe({
+    this.orderService.getAllOrders(this.currentPage, this.pageSize, this.selectedStatusFilter, sortParam, this.keyword).subscribe({
       next: (response) => {
         this.orders = response.content || [];
         this.filteredOrders = this.orders;
@@ -64,6 +67,11 @@ export class OrderManagementComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  searchOrders(): void {
+    this.currentPage = 0;
+    this.loadOrders();
   }
 
   // Filter orders by selected status
@@ -149,22 +157,101 @@ export class OrderManagementComponent implements OnInit {
     if (confirm(`Bạn có chắc muốn cập nhật trạng thái đơn hàng #${order.id} thành "${newStatus}"?`)) {
       this.isLoading = true;
       this.orderService.updateOrderStatus(order.id!, newStatus).subscribe({
-        next: (updatedOrder) => {
-          // Update the order in the list
-          const index = this.orders.findIndex(o => o.id === order.id);
-          if (index !== -1) {
-            this.orders[index] = updatedOrder;
+        next: (response) => {
+          if (response.success) {
+            // Update the order in the list
+            const index = this.orders.findIndex(o => o.id === order.id);
+            if (index !== -1) {
+              this.orders[index] = response.order;
+            }
+            this.applyStatusFilter();
+            this.showToast('Cập nhật trạng thái thành công!', 'success');
+          } else {
+            this.showToast(response.message || 'Không thể cập nhật trạng thái', 'error');
           }
-          this.applyStatusFilter();
           this.isLoading = false;
-          alert('Cập nhật trạng thái thành công!');
         },
         error: (err) => {
-          this.error = 'Failed to update order status';
+          console.error('Error updating order status:', err);
+          let errorMessage = 'Không thể cập nhật trạng thái đơn hàng';
+          if (err.error && err.error.message) {
+            errorMessage = err.error.message;
+          }
+          this.showToast(errorMessage, 'error');
           this.isLoading = false;
         }
       });
     }
+  }
+
+  /**
+   * Hiển thị toast notification
+   */
+  private showToast(message: string, type: 'success' | 'error'): void {
+    // Tạo toast element
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+      <div class="toast-content">
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+      </div>
+    `;
+    
+    // Thêm CSS cho toast
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${type === 'success' ? '#28a745' : '#dc3545'};
+      color: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+      max-width: 400px;
+      animation: slideInRight 0.3s ease-out;
+    `;
+    
+    // Thêm CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      .toast-content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .toast-content i {
+        font-size: 16px;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Thêm vào DOM
+    document.body.appendChild(toast);
+    
+    // Tự động xóa sau 4 giây
+    setTimeout(() => {
+      toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+        if (style.parentNode) {
+          style.parentNode.removeChild(style);
+        }
+      }, 300);
+    }, 4000);
   }
 
   getStatusClass(status: string): string {
@@ -175,6 +262,7 @@ export class OrderManagementComponent implements OnInit {
       case 'SHIPPING': return 'status-shipping';
       case 'DELIVERED': return 'status-delivered';
       case 'CANCELLED': return 'status-cancelled';
+      case 'CUSTOMER_CANCELLED': return 'status-customer-cancelled';
       default: return 'status-pending';
     }
   }
@@ -185,7 +273,20 @@ export class OrderManagementComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleString('vi-VN');
+    if (!dateString) return 'Không có ngày';
+    // Parse ngày từ backend (UTC), cộng thêm 7 tiếng để ra giờ Việt Nam
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Ngày không hợp lệ';
+    }
+    // Cộng thêm 7 tiếng (25200000 ms)
+    const vnDate = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+    const day = vnDate.getDate().toString().padStart(2, '0');
+    const month = (vnDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = vnDate.getFullYear();
+    const hours = vnDate.getHours().toString().padStart(2, '0');
+    const minutes = vnDate.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
   }
 
   getTotalQuantity(orderItems: any[]): number {
@@ -200,6 +301,7 @@ export class OrderManagementComponent implements OnInit {
       case 'SHIPPING': return 'btn-shipping';
       case 'DELIVERED': return 'btn-delivered';
       case 'CANCELLED': return 'btn-cancelled';
+      case 'CUSTOMER_CANCELLED': return 'btn-customer-cancelled';
       case 'ALL': return 'btn-all';
       default: return '';
     }

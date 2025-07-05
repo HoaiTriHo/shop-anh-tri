@@ -3,10 +3,14 @@ package com.shop.backend.controller;
 import com.shop.backend.entity.Order;
 import com.shop.backend.service.DashboardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -64,5 +68,25 @@ public class DashboardController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Map<String, Object>>> getRecentOrders() {
         return ResponseEntity.ok(dashboardService.getRecentOrders());
+    }
+
+    /**
+     * Export báo cáo doanh thu ra file Excel (admin)
+     * @param fromDate ngày bắt đầu (yyyy-MM-dd, optional)
+     * @param toDate ngày kết thúc (yyyy-MM-dd, optional)
+     * @return file Excel
+     */
+    @GetMapping("/export-report")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<byte[]> exportReportExcel(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
+    ) {
+        byte[] excel = dashboardService.exportReportExcel(fromDate, toDate);
+        String filename = "shop-report-" + (fromDate != null ? fromDate : "all") + "-" + (toDate != null ? toDate : "now") + ".xlsx";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(excel);
     }
 } 

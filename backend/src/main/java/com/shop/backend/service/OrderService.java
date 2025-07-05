@@ -167,6 +167,11 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         
+        // Kiểm tra nếu đơn hàng đã bị khách hàng hủy thì không cho phép thay đổi
+        if (order.getStatus() == OrderStatus.CUSTOMER_CANCELLED) {
+            throw new IllegalStateException("Không thể thay đổi trạng thái đơn hàng đã bị khách hàng hủy");
+        }
+        
         order.setStatus(status);
         Order savedOrder = orderRepository.save(order);
         return convertToDto(savedOrder);
@@ -200,6 +205,45 @@ public class OrderService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Cancel order by user (only if status is PENDING)
+     * This method allows users to cancel their own orders
+     * Only orders with PENDING status can be cancelled
+     * When cancelled, product stock is restored
+     * 
+     * @param orderId Order ID
+     * @param username Username of the order owner
+     * @return Cancelled order DTO
+     * @throws IllegalStateException if order cannot be cancelled
+     */
+    public OrderDto cancelOrderByUser(Long orderId, String username) {
+        // Find the user
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Find the order and verify ownership
+        Order order = orderRepository.findByIdAndUser(orderId, user)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Check if order can be cancelled (only PENDING status)
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalStateException("Đơn hàng đã xác nhận, không thể hủy");
+        }
+
+        // Restore product stock
+        for (OrderItem orderItem : order.getOrderItems()) {
+            Product product = orderItem.getProduct();
+            product.setStockQuantity(product.getStockQuantity() + orderItem.getQuantity());
+            productRepository.save(product);
+        }
+
+        // Update order status to CANCELLED
+        order.setStatus(OrderStatus.CUSTOMER_CANCELLED);
+        Order savedOrder = orderRepository.save(order);
+        
+        return convertToDto(savedOrder);
     }
 
     /**
@@ -257,19 +301,20 @@ public class OrderService {
      * @param size Page size
      * @param status Order status filter (optional)
      * @param sort Sort option (e.g. orderDate,desc)
+     * @param keyword Keyword for search (optional)
      * @return Map containing orders, pagination info
      */
     @Transactional(readOnly = true)
-    public Map<String, Object> getAllOrdersWithPagination(int page, int size, String status, String sort) {
+    public Map<String, Object> getAllOrdersWithPagination(int page, int size, String status, String sort, String keyword) {
         List<Order> allOrders;
-        
-        // Filter by status if provided
-        if (status != null && !status.isEmpty()) {
+        // Nếu có keyword thì search theo keyword
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            allOrders = orderRepository.searchOrdersByKeyword(keyword.trim());
+        } else if (status != null && !status.isEmpty()) {
             try {
                 OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
                 allOrders = orderRepository.findByStatus(orderStatus);
             } catch (IllegalArgumentException e) {
-                // If invalid status, return empty list
                 allOrders = new ArrayList<>();
             }
         } else {
@@ -336,6 +381,181 @@ public class OrderService {
         response.put("pageSize", size);
         response.put("hasNext", page < totalPages - 1);
         response.put("hasPrevious", page > 0);
+        
+        return response;
+    }
+
+    /**
+     * Get all orders for a specific user by username with filtering and sorting
+     * 
+     * @param username Username
+     * @param status Order status filter (optional)
+     * @param startDate Start date filter (optional: yyyy-MM-dd)
+     * @param endDate End date filter (optional: yyyy-MM-dd)
+     * @param sort Sort option (orderDate,desc or orderDate,asc)
+     * @return List of order DTOs with filtering and sorting
+     */
+    @Transactional(readOnly = true)
+    public List<OrderDto> getOrdersByUsernameWithFilter(String username, String status, String startDate, String endDate, String sort) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Order> orders = orderRepository.findByUser(user);
+        
+        // Apply filters
+        List<Order> filteredOrders = orders.stream()
+                .filter(order -> {
+                    // Status filter
+                    if (status != null && !status.trim().isEmpty()) {
+                        try {
+                            OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
+                            if (order.getStatus() != orderStatus) {
+                                return false;
+                            }
+                        } catch (IllegalArgumentException e) {
+                            // Invalid status, skip this filter
+                        }
+                    }
+                    
+                    // Date range filter
+                    if (startDate != null && !startDate.trim().isEmpty()) {
+                        try {
+                            java.time.LocalDate start = java.time.LocalDate.parse(startDate);
+                            if (order.getOrderDate().toLocalDate().isBefore(start)) {
+                                return false;
+                            }
+                        } catch (Exception e) {
+                            // Invalid date format, skip this filter
+                        }
+                    }
+                    
+                    if (endDate != null && !endDate.trim().isEmpty()) {
+                        try {
+                            java.time.LocalDate end = java.time.LocalDate.parse(endDate);
+                            if (order.getOrderDate().toLocalDate().isAfter(end)) {
+                                return false;
+                            }
+                        } catch (Exception e) {
+                            // Invalid date format, skip this filter
+                        }
+                    }
+                    
+                    return true;
+                })
+                .collect(Collectors.toList());
+        
+        // Apply sorting
+        if (sort != null && sort.contains("orderDate")) {
+            boolean ascending = sort.contains("asc");
+            filteredOrders.sort((o1, o2) -> {
+                int comparison = o1.getOrderDate().compareTo(o2.getOrderDate());
+                return ascending ? comparison : -comparison;
+            });
+        } else {
+            // Default: newest first
+            filteredOrders.sort((o1, o2) -> o2.getOrderDate().compareTo(o1.getOrderDate()));
+        }
+        
+        return filteredOrders.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all orders for a specific user by username with filtering, sorting and pagination
+     * 
+     * @param username Username
+     * @param status Order status filter (optional)
+     * @param startDate Start date filter (optional: yyyy-MM-dd)
+     * @param endDate End date filter (optional: yyyy-MM-dd)
+     * @param sort Sort option (orderDate,desc or orderDate,asc)
+     * @param page Page number (0-based)
+     * @param size Page size
+     * @return Map with orders, pagination metadata
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Object> getOrdersByUsernameWithFilterAndPagination(String username, String status, String startDate, String endDate, String sort, int page, int size) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Order> allOrders = orderRepository.findByUser(user);
+        
+        // Apply filters
+        List<Order> filteredOrders = allOrders.stream()
+                .filter(order -> {
+                    // Status filter
+                    if (status != null && !status.trim().isEmpty()) {
+                        try {
+                            OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
+                            if (order.getStatus() != orderStatus) {
+                                return false;
+                            }
+                        } catch (IllegalArgumentException e) {
+                            // Invalid status, skip this filter
+                        }
+                    }
+                    
+                    // Date range filter
+                    if (startDate != null && !startDate.trim().isEmpty()) {
+                        try {
+                            java.time.LocalDate start = java.time.LocalDate.parse(startDate);
+                            if (order.getOrderDate().toLocalDate().isBefore(start)) {
+                                return false;
+                            }
+                        } catch (Exception e) {
+                            // Invalid date format, skip this filter
+                        }
+                    }
+                    
+                    if (endDate != null && !endDate.trim().isEmpty()) {
+                        try {
+                            java.time.LocalDate end = java.time.LocalDate.parse(endDate);
+                            if (order.getOrderDate().toLocalDate().isAfter(end)) {
+                                return false;
+                            }
+                        } catch (Exception e) {
+                            // Invalid date format, skip this filter
+                        }
+                    }
+                    
+                    return true;
+                })
+                .collect(Collectors.toList());
+        
+        // Apply sorting
+        if (sort != null && sort.contains("orderDate")) {
+            boolean ascending = sort.contains("asc");
+            filteredOrders.sort((o1, o2) -> {
+                int comparison = o1.getOrderDate().compareTo(o2.getOrderDate());
+                return ascending ? comparison : -comparison;
+            });
+        } else {
+            // Default: newest first
+            filteredOrders.sort((o1, o2) -> o2.getOrderDate().compareTo(o1.getOrderDate()));
+        }
+        
+        // Apply pagination
+        int totalElements = filteredOrders.size();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        int startIndex = page * size;
+        int endIndex = Math.min(startIndex + size, totalElements);
+        
+        List<Order> pagedOrders = filteredOrders.subList(startIndex, endIndex);
+        
+        // Convert to DTOs
+        List<OrderDto> orderDtos = pagedOrders.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        
+        // Build response
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", orderDtos);
+        response.put("totalElements", totalElements);
+        response.put("totalPages", totalPages);
+        response.put("currentPage", page);
+        response.put("size", size);
+        response.put("first", page == 0);
+        response.put("last", page >= totalPages - 1);
         
         return response;
     }

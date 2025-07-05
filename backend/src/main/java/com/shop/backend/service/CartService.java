@@ -118,6 +118,20 @@ public class CartService {
         return convertToDto(cart);
     }
 
+    public CartDto clearCart(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new RuntimeException("Cart not found"));
+        
+        // Xóa tất cả items trong giỏ hàng
+        cartItemRepository.deleteByCart(cart);
+        cart.getItems().clear();
+        cart.setTotalPrice(BigDecimal.ZERO);
+        cartRepository.save(cart);
+        
+        return convertToDto(cart);
+    }
+
     private Cart createCartForUser(User user) {
         Cart cart = new Cart();
         cart.setUser(user);

@@ -2,15 +2,15 @@
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-container">
     <div class="spinner"></div>
-    <p>Loading product details...</p>
+    <p>Đang tải chi tiết sản phẩm...</p>
   </div>
 
   <!-- Error State -->
   <div *ngIf="error" class="error-container">
     <div class="error-icon">⚠️</div>
-    <h2>Oops! Something went wrong</h2>
+    <h2>Rất tiếc! Đã xảy ra lỗi</h2>
     <p>{{ error }}</p>
-    <button class="btn btn-primary" (click)="loadProduct()">Try Again</button>
+    <button class="btn btn-primary" (click)="loadProduct()">Thử lại</button>
   </div>
 
   <!-- Product Details -->
@@ -37,34 +37,34 @@
       <div class="product-price">
         <span class="price">{{ product.price | number:'1.0-0' }} ₫</span>
         <span class="stock-status" [class.in-stock]="product.stockQuantity! > 0" [class.out-of-stock]="product.stockQuantity! === 0">
-          {{ product.stockQuantity! > 0 ? 'In Stock' : 'Out of Stock' }}
+          {{ product.stockQuantity! > 0 ? 'Còn hàng' : 'Hết hàng' }}
         </span>
       </div>
 
       <div class="product-description">
-        <h3>Description</h3>
+        <h3>Mô tả</h3>
         <p>{{ product.description }}</p>
       </div>
 
       <div class="product-specs">
         <div class="spec-item">
-          <span class="spec-label">Category:</span>
+          <span class="spec-label">Danh mục:</span>
           <span class="spec-value">{{ product.category }}</span>
         </div>
         <div class="spec-item">
-          <span class="spec-label">Brand:</span>
+          <span class="spec-label">Thương hiệu:</span>
           <span class="spec-value">{{ product.brand }}</span>
         </div>
         <div class="spec-item">
-          <span class="spec-label">Stock:</span>
-          <span class="spec-value">{{ product.stockQuantity }} units</span>
+          <span class="spec-label">Tồn kho:</span>
+          <span class="spec-value">{{ product.stockQuantity }} sản phẩm</span>
         </div>
       </div>
 
       <div class="product-actions">
         <!-- Quantity Selector -->
         <div class="quantity-selector">
-          <label>Quantity:</label>
+          <label>Số lượng:</label>
           <div class="quantity-controls">
             <button 
               class="quantity-btn" 
@@ -93,11 +93,11 @@
           >
             <span *ngIf="!addingToCart">
               <i class="bi bi-cart-plus"></i>
-              Add to Cart
+              Thêm vào giỏ
             </span>
             <span *ngIf="addingToCart">
               <i class="bi bi-hourglass-split"></i>
-              Adding...
+              Đang thêm...
             </span>
           </button>
 
@@ -108,11 +108,11 @@
           >
             <span *ngIf="!addingToCart">
               <i class="bi bi-lightning"></i>
-              Buy Now
+              Mua ngay
             </span>
             <span *ngIf="addingToCart">
               <i class="bi bi-hourglass-split"></i>
-              Processing...
+              Đang xử lý...
             </span>
           </button>
         </div>
@@ -120,7 +120,7 @@
         <!-- Cart Status -->
         <div *ngIf="isInCart()" class="cart-status">
           <i class="bi bi-check-circle"></i>
-          <span>This item is in your cart ({{ getCartQuantity() }} {{ getCartQuantity() === 1 ? 'item' : 'items' }})</span>
+          <span>Sản phẩm này đã có trong giỏ hàng ({{ getCartQuantity() }} {{ getCartQuantity() === 1 ? 'sản phẩm' : 'sản phẩm' }})</span>
         </div>
       </div>
     </div>

@@ -164,4 +164,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      * Đếm số lượng đơn theo trạng thái
      */
     long countByStatus(OrderStatus status);
+
+    /**
+     * Search orders by keyword (customer name, email, or id)
+     */
+    @Query("SELECT o FROM Order o WHERE LOWER(o.customerName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(o.customerEmail) LIKE LOWER(CONCAT('%', :keyword, '%')) OR CAST(o.id AS string) LIKE CONCAT('%', :keyword, '%')")
+    List<Order> searchOrdersByKeyword(@Param("keyword") String keyword);
 } 

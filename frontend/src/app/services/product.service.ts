@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { Product, ProductCreateRequest, ProductUpdateRequest } from '../models/product.model';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private readonly API_URL = 'http://localhost:8080/api/products';
+  private readonly API_URL = `${environment.apiUrl}/api/products`;
 
   constructor(private http: HttpClient) { }
 

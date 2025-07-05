@@ -121,22 +121,29 @@
   border-radius: 16px;
   border: 2px solid #ffc10799;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
 }
 .promo-input-group .form-control {
   background: transparent;
   color: #fff;
   border: none;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 500;
   box-shadow: none;
   outline: none;
-  padding: 0.7rem 1rem;
+  padding: 0.85rem 1.2rem;
   flex: 1 1 0%;
   min-width: 0;
+  border-radius: 16px 0 0 16px;
+  height: 48px;
+  display: flex;
+  align-items: center;
 }
 .promo-input-group .form-control::placeholder {
   color: #ccc;
   opacity: 1;
+  font-size: 1.1rem;
+  font-weight: 400;
 }
 .promo-input-group .btn {
   border-radius: 0 16px 16px 0;
@@ -144,14 +151,15 @@
   color: #23272b;
   font-weight: 700;
   border: none;
-  font-size: 1rem;
-  padding: 0 1.5rem;
+  font-size: 1.1rem;
+  padding: 0 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: auto;
-  min-width: 70px;
+  height: 48px;
+  min-width: 90px;
   transition: background 0.2s, color 0.2s;
+  box-shadow: none;
 }
 .promo-input-group .btn:hover:not(:disabled) {
   background: #ffb300;

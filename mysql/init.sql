@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS users (
     is_account_non_expired BOOLEAN NOT NULL DEFAULT TRUE,
     is_account_non_locked BOOLEAN NOT NULL DEFAULT TRUE,
     is_credentials_non_expired BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_username (username),
     INDEX idx_email (email),
     INDEX idx_role (role)
@@ -73,10 +75,10 @@ CREATE TABLE IF NOT EXISTS order_products (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert sample users
-INSERT INTO users (username, email, password, first_name, last_name, role) VALUES
-('admin', 'admin@shop.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 'Admin', 'User', 'ADMIN'),
-('john_doe', 'john@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 'John', 'Doe', 'USER'),
-('jane_smith', 'jane@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 'Jane', 'Smith', 'USER');
+INSERT INTO users (username, email, password, first_name, last_name, role, created_at) VALUES
+('admin', 'admin@shop.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 'Admin', 'User', 'ADMIN', NOW()),
+('john_doe', 'john@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 'John', 'Doe', 'USER', NOW()),
+('jane_smith', 'jane@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 'Jane', 'Smith', 'USER', NOW());
 
 -- Insert sample products
 INSERT INTO products (name, description, price, stock_quantity, category, brand, image_url) VALUES

@@ -208,7 +208,7 @@ public class ProductService {
      * @param query Search query
      * @param category Category filter
      * @param price Price range filter (0-50, 50-100, 100+)
-     * @param sort Sort option (name, price-low, price-high, newest)
+     * @param sort Sort option (name, price-low, price-high, newest, oldest, createdAt,asc, createdAt,desc)
      * @return Map with products and total count
      */
     public Map<String, Object> getProducts(int page, int size, String query, String category, String price, String sort) {
@@ -229,13 +229,13 @@ public class ProductService {
         if (price != null && !price.isEmpty()) {
             switch (price) {
                 case "0-50":
-                    all = all.stream().filter(p -> p.getPrice() != null && p.getPrice().compareTo(java.math.BigDecimal.valueOf(50)) <= 0).collect(Collectors.toList());
+                    all = all.stream().filter(p -> p.getPrice() != null && p.getPrice().compareTo(java.math.BigDecimal.valueOf(500_000)) <= 0).collect(Collectors.toList());
                     break;
                 case "50-100":
-                    all = all.stream().filter(p -> p.getPrice() != null && p.getPrice().compareTo(java.math.BigDecimal.valueOf(50)) > 0 && p.getPrice().compareTo(java.math.BigDecimal.valueOf(100)) <= 0).collect(Collectors.toList());
+                    all = all.stream().filter(p -> p.getPrice() != null && p.getPrice().compareTo(java.math.BigDecimal.valueOf(500_000)) > 0 && p.getPrice().compareTo(java.math.BigDecimal.valueOf(1_000_000)) <= 0).collect(Collectors.toList());
                     break;
                 case "100+":
-                    all = all.stream().filter(p -> p.getPrice() != null && p.getPrice().compareTo(java.math.BigDecimal.valueOf(100)) > 0).collect(Collectors.toList());
+                    all = all.stream().filter(p -> p.getPrice() != null && p.getPrice().compareTo(java.math.BigDecimal.valueOf(1_000_000)) > 0).collect(Collectors.toList());
                     break;
             }
         }
@@ -249,6 +249,15 @@ public class ProductService {
                     all = all.stream().sorted(Comparator.comparing(Product::getPrice, Comparator.nullsLast(java.math.BigDecimal::compareTo)).reversed()).collect(Collectors.toList());
                     break;
                 case "newest":
+                    all = all.stream().sorted(Comparator.comparing(Product::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
+                    break;
+                case "oldest":
+                    all = all.stream().sorted(Comparator.comparing(Product::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
+                    break;
+                case "createdAt,asc":
+                    all = all.stream().sorted(Comparator.comparing(Product::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
+                    break;
+                case "createdAt,desc":
                     all = all.stream().sorted(Comparator.comparing(Product::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
                     break;
                 default:

@@ -21,7 +21,7 @@ export interface CheckoutRequest {
   providedIn: 'root'
 })
 export class OrderService {
-  private readonly API_URL = 'http://localhost:8080/api/orders';
+  private readonly API_URL = `${environment.apiUrl}/api/orders`;
 
   constructor(private http: HttpClient) { }
 
@@ -49,10 +49,13 @@ export class OrderService {
   /**
    * Get all orders with pagination, status filter, and sort (Admin only)
    */
-  getAllOrders(page: number = 0, size: number = 10, status?: string, sort: string = 'orderDate,desc'): Observable<any> {
+  getAllOrders(page: number = 0, size: number = 10, status?: string, sort: string = 'orderDate,desc', keyword?: string): Observable<any> {
     let url = `${this.API_URL}/admin/all?page=${page}&size=${size}&sort=${sort}`;
     if (status && status !== 'ALL') {
       url += `&status=${status}`;
+    }
+    if (keyword && keyword.trim() !== '') {
+      url += `&keyword=${encodeURIComponent(keyword.trim())}`;
     }
     return this.http.get<any>(url);
   }
@@ -60,8 +63,8 @@ export class OrderService {
   /**
    * Update order status (Admin only)
    */
-  updateOrderStatus(id: number, status: string): Observable<Order> {
-    return this.http.put<Order>(`${this.API_URL}/admin/${id}/status?status=${status}`, {});
+  updateOrderStatus(id: number, status: string): Observable<any> {
+    return this.http.put<any>(`${this.API_URL}/admin/${id}/status?status=${status}`, {});
   }
 
   /**
@@ -69,6 +72,14 @@ export class OrderService {
    */
   cancelOrder(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
+  }
+
+  /**
+   * Cancel order by user (only if status is PENDING)
+   * Returns response with success status and message
+   */
+  cancelOrderByUser(id: number): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/api/orders/${id}/cancel`, {});
   }
 
   /**
@@ -108,5 +119,23 @@ export class OrderService {
         quantity: item.quantity
       }))
     };
+  }
+
+  /**
+   * Get all orders for current user with filtering, sorting and pagination
+   */
+  getMyOrdersWithFilter(params: any): Observable<any> {
+    let url = `${environment.apiUrl}/api/orders/my-orders?`;
+    const queryParams = new URLSearchParams();
+    
+    if (params.status) queryParams.append('status', params.status);
+    if (params.startDate) queryParams.append('startDate', params.startDate);
+    if (params.endDate) queryParams.append('endDate', params.endDate);
+    if (params.sort) queryParams.append('sort', params.sort);
+    if (params.page !== undefined) queryParams.append('page', params.page.toString());
+    if (params.size !== undefined) queryParams.append('size', params.size.toString());
+    
+    url += queryParams.toString();
+    return this.http.get<any>(url);
   }
 }

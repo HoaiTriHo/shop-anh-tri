@@ -81,16 +81,14 @@ shop-app/
    npm start
    ```
 
-## 👥 Default Users
+## 👥 Đăng nhập tài khoản
 
-### Regular User
-- **Username**: `demo`
+### Người dùng thông thường
+- Vui lòng tự tạo 1 tài khoản mới để trải nghiệm mua sắm (qua chức năng Đăng ký trên website).
+
+### Tài khoản Admin
+- **Username**: `global`
 - **Password**: `123456`
-- **Role**: `USER`
-
-### Admin User
-- **Username**: `admin`
-- **Password**: `admin123`
 - **Role**: `ADMIN`
 
 ## 🔧 Configuration
@@ -165,3 +163,30 @@ For support and questions:
 ---
 
 **Shop Anh Trí** - Your trusted online shopping destination! 🛒✨ 
+
+## Thông tin môi trường FE (Angular)
+
+- Khi bạn build frontend (FE) bằng Docker Compose, Angular sẽ **luôn sử dụng file `src/environments/environment.prod.ts`** để lấy các biến môi trường (ví dụ: domain API).
+- Nếu muốn đổi domain API (hoặc các biến môi trường khác), bạn **phải sửa giá trị trong file `environment.prod.ts`** rồi build lại Docker image FE.
+- Khi chạy lệnh build FE (trong Dockerfile hoặc docker-compose), Angular sẽ tự động dùng file này cho production build.
+
+### Ví dụ thay đổi domain API:
+1. Mở file: `frontend/src/environments/environment.prod.ts`
+2. Sửa dòng:
+   ```ts
+   export const environment = {
+     production: true,
+     apiUrl: 'http://localhost:8080' // Đổi thành domain backend thật nếu deploy
+   };
+   ```
+3. Build lại image FE:
+   ```bash
+   docker-compose build frontend
+   docker-compose up -d frontend
+   ```
+
+## Lưu ý
+- Docker Compose **không tự động chọn file môi trường** cho Angular, mà Angular CLI sẽ tự động dùng file `environment.prod.ts` khi build production.
+- Nếu muốn domain API động mà không cần build lại image, hãy tham khảo giải pháp đọc config từ file ngoài (assets/config.json), cần sửa code FE.
+
+## Các thông tin cũ/lỗi thời đã được xoá khỏi README này để tránh nhầm lẫn. 

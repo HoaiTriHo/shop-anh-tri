@@ -309,6 +309,11 @@
   color: white;
 }
 
+.status-customer-cancelled {
+  background: #fd7e14;
+  color: white;
+}
+
 /* Order Date */
 .order-date .date {
   color: #ccc;
@@ -688,7 +693,11 @@
 }
 .btn-cancelled {
   background: #dc3545;
-  color: #fff;
+  color: white;
+}
+.btn-customer-cancelled {
+  background: #fd7e14;
+  color: white;
 }
 
 .status-filter-btn.active {

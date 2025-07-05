@@ -1,0 +1,665 @@
+.my-orders-container {
+  max-width: 1200px;
+  margin: 32px auto;
+  padding: 0 20px;
+}
+
+.my-orders-container h2 {
+  color: #fff;
+  margin-bottom: 32px;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.my-orders-container h2 i {
+  color: #ffb300;
+}
+
+/* Loading state */
+.loading {
+  text-align: center;
+  color: #fff;
+  font-size: 18px;
+  padding: 40px;
+}
+
+.loading i {
+  margin-right: 8px;
+  color: #ffb300;
+}
+
+/* Error state */
+.error {
+  background: #ff5252;
+  color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  color: #fff;
+  padding: 60px 20px;
+}
+
+.empty-state i {
+  font-size: 64px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  font-size: 18px;
+  margin-bottom: 24px;
+  color: #ccc;
+}
+
+.btn-shop {
+  background: #ffb300;
+  color: #23272f;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.btn-shop:hover {
+  background: #ffa000;
+}
+
+/* Orders list - 1 row per order */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-row {
+  background: #23272f;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #333;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.order-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+/* Main order info - horizontal layout */
+.order-main-info {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #333;
+  flex-wrap: wrap;
+}
+
+.order-id {
+  color: #ffb300;
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 80px;
+}
+
+.order-date {
+  color: #ccc;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 100px;
+}
+
+.order-status {
+  flex-shrink: 0;
+}
+
+.order-total {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 120px;
+  text-align: center;
+}
+
+.order-items-count {
+  color: #ccc;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 100px;
+}
+
+/* Order actions - Cancel button */
+.order-actions {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.btn-cancel-order {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-cancel-order:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn-cancel-order:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+}
+
+.btn-cancel-order:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-cancel-order i {
+  font-size: 12px;
+}
+
+/* Items section with horizontal scroll */
+.order-items-section {
+  margin-top: 16px;
+}
+
+.items-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #ffb300 #181c22;
+}
+
+.items-scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.items-scroll-container::-webkit-scrollbar-track {
+  background: #181c22;
+  border-radius: 3px;
+}
+
+.items-scroll-container::-webkit-scrollbar-thumb {
+  background: #ffb300;
+  border-radius: 3px;
+}
+
+.items-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #ffa000;
+}
+
+.items-row {
+  display: flex;
+  gap: 16px;
+  min-width: max-content;
+  padding-bottom: 8px;
+}
+
+/* Compact item display */
+.item-compact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #181c22;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 200px;
+  max-width: 250px;
+  border: 1px solid #333;
+  transition: border-color 0.2s;
+}
+
+.item-compact:hover {
+  border-color: #ffb300;
+}
+
+.item-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-info-compact {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-details-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.quantity {
+  color: #ffb300;
+  font-weight: 500;
+}
+
+.price {
+  color: #ccc;
+}
+
+/* Status Badges - Cải thiện màu sắc và thiết kế */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 100px;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.status-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Pending - Màu vàng cam */
+.status-pending {
+  background: linear-gradient(135deg, #ff9500, #ff6b35);
+  color: #fff;
+  border-color: #ff9500;
+}
+
+/* Confirmed - Màu xanh dương */
+.status-confirmed {
+  background: linear-gradient(135deg, #007aff, #5ac8fa);
+  color: #fff;
+  border-color: #007aff;
+}
+
+/* Processing - Màu tím */
+.status-processing {
+  background: linear-gradient(135deg, #8e44ad, #9b59b6);
+  color: #fff;
+  border-color: #8e44ad;
+}
+
+/* Shipping - Màu xanh lá */
+.status-shipping {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: #fff;
+  border-color: #27ae60;
+}
+
+/* Delivered - Màu xanh đậm */
+.status-delivered {
+  background: linear-gradient(135deg, #16a085, #1abc9c);
+  color: #fff;
+  border-color: #16a085;
+}
+
+/* Cancelled - Màu đỏ */
+.status-cancelled {
+  background: #dc3545;
+  color: white;
+}
+
+/* Customer Cancelled - Màu đỏ */
+.status-customer-cancelled {
+  background: linear-gradient(90deg, #ff512f, #dd2476);
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-weight: bold;
+  display: inline-block;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.08);
+  letter-spacing: 1px;
+  font-size: 14px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .order-main-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .order-id, .order-date, .order-total, .order-items-count {
+    min-width: auto;
+  }
+  
+  .items-row {
+    gap: 12px;
+  }
+  
+  .item-compact {
+    min-width: 180px;
+    max-width: 200px;
+  }
+  
+  .item-image {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .item-name {
+    font-size: 12px;
+  }
+  
+  .item-details-compact {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-row {
+    padding: 16px;
+  }
+  
+  .item-compact {
+    min-width: 160px;
+    max-width: 180px;
+    padding: 8px;
+  }
+  
+  .item-image {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* Pagination */
+.pagination-section {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #23272f;
+  border-radius: 12px;
+  border: 1px solid #333;
+}
+
+.pagination-info {
+  color: #ccc;
+  font-size: 14px;
+  text-align: center;
+}
+
+.debug-info {
+  color: #ffb300;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-page {
+  background: #181c22;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s;
+}
+
+.btn-page:hover:not(:disabled) {
+  background: #ffb300;
+  color: #23272f;
+  border-color: #ffb300;
+}
+
+.btn-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-page-number {
+  background: #181c22;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 40px;
+  transition: all 0.3s;
+}
+
+.btn-page-number:hover {
+  background: #ffb300;
+  color: #23272f;
+  border-color: #ffb300;
+}
+
+.btn-page-number.active {
+  background: #ffb300;
+  color: #23272f;
+  border-color: #ffb300;
+  font-weight: 600;
+}
+
+/* Filter Section - Cải thiện thiết kế */
+.filter-section {
+  background: #23272f;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 150px;
+}
+
+.filter-group label {
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-group label i {
+  color: #ffb300;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.filter-group:hover label i {
+  color: #ffd700;
+  transform: scale(1.1);
+}
+
+.filter-group select,
+.filter-group input {
+  background: #181c22;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.filter-group select:hover,
+.filter-group input:hover {
+  border-color: #ffb300;
+  background: #1e2329;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 179, 0, 0.1);
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  outline: none;
+  border-color: #ffb300;
+  background: #1e2329;
+  box-shadow: 0 0 0 3px rgba(255, 179, 0, 0.1);
+}
+
+.filter-group select option {
+  background: #181c22;
+  color: #fff;
+  padding: 8px;
+}
+
+.btn-clear {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-clear:hover {
+  background: linear-gradient(135deg, #c0392b, #a93226);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn-clear:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-clear i {
+  font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+.btn-clear:hover i {
+  transform: rotate(90deg);
+}
+
+/* Responsive filter */
+@media (max-width: 768px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group {
+    min-width: auto;
+  }
+  
+  .btn-clear {
+    align-self: flex-start;
+  }
+}
+
+/* Đổi màu icon calendar trong input date */
+.filter-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(81%) sepia(77%) saturate(748%) hue-rotate(1deg) brightness(105%) contrast(101%);
+  /* Màu vàng sáng */
+  cursor: pointer;
+}
+
+.filter-group input[type="date"]::-webkit-input-placeholder {
+  color: #fff;
+  opacity: 0.7;
+}
+
+.filter-group input[type="date"]:focus::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(97%) sepia(100%) saturate(0%) hue-rotate(294deg) brightness(104%) contrast(104%);
+}
+
+/* Firefox */
+.filter-group input[type="date"]::-moz-placeholder {
+  color: #fff;
+  opacity: 0.7;
+}
+
+/* Edge/IE */
+.filter-group input[type="date"]:-ms-input-placeholder {
+  color: #fff;
+  opacity: 0.7;
+}

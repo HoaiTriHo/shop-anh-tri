@@ -94,7 +94,16 @@ export class CartViewComponent implements OnInit {
    * Xóa toàn bộ giỏ hàng
    */
   clearCart(): void {
-    this.cartService.clearCart();
+    this.cartService.clearCart().subscribe({
+      next: (success) => {
+        if (!success) {
+          console.error('Failed to clear cart');
+        }
+      },
+      error: (error) => {
+        console.error('Error clearing cart:', error);
+      }
+    });
   }
 
   /**

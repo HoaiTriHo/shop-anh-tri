@@ -39,11 +39,7 @@ export class AdminLayoutComponent implements OnInit {
    * Xóa token và chuyển về trang login
    */
   logout(): void {
-    // Xóa token và user info
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentUser');
-    
-    // Chuyển về trang login
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 } 

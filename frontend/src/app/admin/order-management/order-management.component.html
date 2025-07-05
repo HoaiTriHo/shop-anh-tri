@@ -19,6 +19,13 @@
     </button>
   </div>
 
+  <!-- Search Bar -->
+  <div class="search-bar" style="margin-bottom: 16px; display: flex; gap: 8px; align-items: center;">
+    <input type="text" [(ngModel)]="keyword" (keyup.enter)="searchOrders()" placeholder="Tìm theo tên khách, email, mã đơn hàng..." class="search-input" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #333; min-width: 260px;">
+    <button class="btn btn-primary" (click)="searchOrders()"><i class="fas fa-search"></i> Tìm kiếm</button>
+    <button class="btn btn-secondary" (click)="keyword=''; searchOrders()"><i class="fas fa-times"></i></button>
+  </div>
+
   <!-- Error Message -->
   <div *ngIf="error" class="error-message">
     {{ error }}
@@ -82,11 +89,15 @@
               class="status-select" 
               [value]="order.status"
               (change)="onStatusChange($event, order)"
+              [disabled]="(order.status + '') === 'CUSTOMER_CANCELLED'"
             >
               <option *ngFor="let status of statusOptions.slice(1)" [value]="status.value">
                 {{ status.label }}
               </option>
             </select>
+            <div *ngIf="(order.status + '') === 'CUSTOMER_CANCELLED'" class="status-note" style="color: #ff4e50; font-size: 12px; margin-top: 4px;">
+              Đơn đã huỷ bởi khách, không thể cập nhật
+            </div>
           </td>
         </tr>
       </tbody>
@@ -225,11 +236,15 @@
               class="status-select-large" 
               [ngModel]="selectedOrder.status"
               (ngModelChange)="updateOrderStatus(selectedOrder, $event)"
+              [disabled]="(selectedOrder.status + '') === 'CUSTOMER_CANCELLED'"
             >
               <option *ngFor="let status of statusOptions.slice(1)" [value]="status.value">
                 {{ status.label }}
               </option>
             </select>
+            <div *ngIf="(selectedOrder.status + '') === 'CUSTOMER_CANCELLED'" class="status-note" style="color: #ff4e50; font-size: 12px; margin-top: 4px;">
+              Đơn đã huỷ bởi khách, không thể cập nhật
+            </div>
           </div>
         </div>
       </div>

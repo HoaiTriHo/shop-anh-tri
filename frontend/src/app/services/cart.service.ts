@@ -215,9 +215,39 @@ export class CartService {
   /**
    * Xóa toàn bộ giỏ hàng
    */
-  clearCart(): void {
-    this.cartSubject.next([]);
-    this.updateCartMetrics();
+  clearCart(): Observable<boolean> {
+    if (!this.authService.isLoggedIn()) {
+      return of(false);
+    }
+
+    return this.http.delete<any>(`${environment.apiUrl}/api/cart`).pipe(
+      map(response => {
+        // Cập nhật giỏ hàng từ response
+        const items = response.items.map((item: any) => ({
+          id: item.id,
+          product: {
+            id: item.product.id,
+            name: item.product.name,
+            description: item.product.description,
+            price: item.product.price,
+            imageUrl: item.product.imageUrl,
+            category: item.product.category,
+            brand: item.product.brand,
+            stockQuantity: item.product.stockQuantity,
+            active: item.product.active
+          },
+          quantity: item.quantity,
+          price: item.price
+        }));
+        this.cartSubject.next(items);
+        this.updateCartMetrics();
+        return true;
+      }),
+      catchError(error => {
+        console.error('Error clearing cart:', error);
+        return of(false);
+      })
+    );
   }
 
   /**

@@ -4,6 +4,7 @@ import { OrderService } from '../../services/order.service';
 import { CartItem } from '../../models/cart.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-checkout',
@@ -30,14 +31,15 @@ export class CheckoutComponent implements OnInit {
     private cartService: CartService,
     private orderService: OrderService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     // Khởi tạo form với các trường cần thiết
     this.checkoutForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       address: ['', Validators.required],
-      phone: ['', [Validators.required, Validators.pattern(/^\d{10,}$/)]],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10,}$/)]],
       paymentMethod: ['COD', Validators.required],
     });
   }
@@ -50,6 +52,25 @@ export class CheckoutComponent implements OnInit {
     this.cartService.cartTotal$.subscribe(total => {
       this.cartTotal = total;
     });
+
+    // Tự động lấy profile user và patch vào form nếu đã đăng nhập
+    if (this.authService.isLoggedIn()) {
+      this.authService.getProfile().subscribe({
+        next: (profile) => {
+          // Ghép họ tên
+          const fullName = ((profile.firstName || '') + ' ' + (profile.lastName || '')).trim();
+          this.checkoutForm.patchValue({
+            name: fullName,
+            email: profile.email || '',
+            address: profile.address || '',
+            phone: profile.phoneNumber || ''
+          });
+        },
+        error: (err) => {
+          // Không làm gì nếu lỗi
+        }
+      });
+    }
   }
 
   onSubmit(): void {
@@ -85,7 +106,16 @@ export class CheckoutComponent implements OnInit {
         this.isLoading = false;
         this.orderSuccess = true;
         // Xóa giỏ hàng sau khi đặt hàng thành công
-        this.cartService.clearCart();
+        this.cartService.clearCart().subscribe({
+          next: (success) => {
+            if (!success) {
+              console.error('Failed to clear cart after checkout');
+            }
+          },
+          error: (error) => {
+            console.error('Error clearing cart after checkout:', error);
+          }
+        });
         // Không tự động chuyển trang nữa
       },
       error: (error) => {

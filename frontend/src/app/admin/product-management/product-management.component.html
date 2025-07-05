@@ -1,13 +1,13 @@
 <div class="product-management">
   <!-- Header Section -->
   <div class="header">
-    <h1>Product Management</h1>
+    <h1>Quản lý sản phẩm</h1>
     <div class="header-actions">
       <button class="btn btn-primary" (click)="showAddProductForm()">
-        <i class="fas fa-plus"></i> Add Product
+        <i class="fas fa-plus"></i> Thêm sản phẩm
       </button>
       <button class="btn btn-secondary" (click)="exportProducts()">
-        <i class="fas fa-download"></i> Export CSV
+        <i class="fas fa-download"></i> Xuất CSV
       </button>
     </div>
   </div>
@@ -17,7 +17,7 @@
     <div class="search-box">
       <input 
         type="text" 
-        placeholder="Search products by name, description, category, or brand..."
+        placeholder="Tìm kiếm sản phẩm theo tên, mô tả, danh mục hoặc thương hiệu..."
         [(ngModel)]="searchTerm"
         (ngModelChange)="onSearch()"
         class="search-input"
@@ -35,7 +35,7 @@
   <!-- Loading Spinner -->
   <div *ngIf="isLoading" class="loading-spinner">
     <div class="spinner"></div>
-    <p>Loading...</p>
+    <p>Đang tải...</p>
   </div>
 
   <!-- Products Table -->
@@ -83,7 +83,7 @@
               (click)="toggleProductStatus(product)"
               class="status-toggle"
             >
-              {{ product.active ? 'Active' : 'Inactive' }}
+              {{ product.active ? 'Hoạt động' : 'Không hoạt động' }}
             </span>
           </td>
           <td>
@@ -101,22 +101,22 @@
     <!-- Empty State -->
     <div *ngIf="filteredProducts.length === 0" class="empty-state">
       <i class="fas fa-box-open"></i>
-      <h3>No products found</h3>
-      <p *ngIf="searchTerm">Try adjusting your search terms</p>
-      <p *ngIf="!searchTerm">Get started by adding your first product</p>
-      <button class="btn btn-primary" (click)="showAddProductForm()">Add Product</button>
+      <h3>Không tìm thấy sản phẩm</h3>
+      <p *ngIf="searchTerm">Hãy thử điều chỉnh từ khóa tìm kiếm</p>
+      <p *ngIf="!searchTerm">Bắt đầu bằng cách thêm sản phẩm đầu tiên</p>
+      <button class="btn btn-primary" (click)="showAddProductForm()">Thêm sản phẩm</button>
     </div>
 
     <!-- Pagination -->
     <div *ngIf="totalPages > 1" class="pagination-container">
       <div class="pagination-info">
-        Showing {{ (currentPage * pageSize) + 1 }} to {{ Math.min((currentPage + 1) * pageSize, totalItems) }} of {{ totalItems }} products
+        Hiển thị {{ (currentPage * pageSize) + 1 }} đến {{ Math.min((currentPage + 1) * pageSize, totalItems) }} trong tổng số {{ totalItems }} sản phẩm
       </div>
       
       <div class="pagination-controls">
         <!-- Page Size Selector -->
         <div class="page-size-selector">
-          <label>Show:</label>
+          <label>Hiển thị:</label>
           <select #pageSizeSelect (change)="onPageSizeChange(+pageSizeSelect.value)">
             <option [value]="5" [selected]="pageSize === 5">5</option>
             <option [value]="10" [selected]="pageSize === 10">10</option>
@@ -132,7 +132,7 @@
             [disabled]="currentPage === 0"
             (click)="onPageChange(currentPage - 1)"
           >
-            <i class="fas fa-chevron-left"></i> Previous
+            <i class="fas fa-chevron-left"></i> Trước
           </button>
 
           <div class="page-numbers">
@@ -152,7 +152,7 @@
             [disabled]="currentPage === totalPages - 1"
             (click)="onPageChange(currentPage + 1)"
           >
-            Next <i class="fas fa-chevron-right"></i>
+            Sau <i class="fas fa-chevron-right"></i>
           </button>
         </div>
       </div>
@@ -163,98 +163,101 @@
   <div *ngIf="showAddForm || showEditForm" class="modal-overlay" (click)="closeForm()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>{{ showAddForm ? 'Add New Product' : 'Edit Product' }}</h2>
+        <h2>{{ showAddForm ? 'Thêm sản phẩm mới' : 'Chỉnh sửa sản phẩm' }}</h2>
         <button class="close-btn" (click)="closeForm()">×</button>
       </div>
 
       <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
         <div class="form-row">
           <div class="form-group">
-            <label for="name">Product Name *</label>
+            <label for="name">Tên sản phẩm *</label>
             <input 
               type="text" 
               id="name" 
               formControlName="name" 
-              placeholder="Enter product name"
+              placeholder="Nhập tên sản phẩm"
               [class.invalid]="productForm.get('name')?.invalid && productForm.get('name')?.touched"
             >
             <div *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched" class="error-text">
-              Product name is required and must be at least 3 characters
+              Tên sản phẩm là bắt buộc và phải có ít nhất 3 ký tự
             </div>
           </div>
 
           <div class="form-group">
-            <label for="category">Category *</label>
+            <label for="category">Danh mục *</label>
             <select 
               id="category" 
               formControlName="category"
               [class.invalid]="productForm.get('category')?.invalid && productForm.get('category')?.touched"
             >
-              <option value="">Select category</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Clothing">Clothing</option>
-              <option value="Books">Books</option>
-              <option value="Home & Garden">Home & Garden</option>
-              <option value="Sports">Sports</option>
-              <option value="Beauty">Beauty</option>
-              <option value="Toys">Toys</option>
-              <option value="Automotive">Automotive</option>
+              <option value="">Chọn danh mục</option>
+              <option value="Electronics">Điện tử</option>
+              <option value="Clothing">Thời trang</option>
+              <option value="Books">Sách</option>
+              <option value="Home & Garden">Nhà cửa & Vườn</option>
+              <option value="Sports">Thể thao</option>
+              <option value="Beauty">Làm đẹp</option>
+              <option value="Toys">Đồ chơi</option>
+              <option value="Automotive">Ô tô</option>
             </select>
             <div *ngIf="productForm.get('category')?.invalid && productForm.get('category')?.touched" class="error-text">
-              Category is required
+              Danh mục là bắt buộc
             </div>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="brand">Brand *</label>
+        <div class="form-row" style="display: flex; gap: 20px;">
+          <div class="form-group" style="flex:1;">
+            <label for="brand">Thương hiệu *</label>
             <input 
               type="text" 
               id="brand" 
               formControlName="brand" 
-              placeholder="Enter brand name"
+              placeholder="Nhập tên thương hiệu"
               [class.invalid]="productForm.get('brand')?.invalid && productForm.get('brand')?.touched"
             >
             <div *ngIf="productForm.get('brand')?.invalid && productForm.get('brand')?.touched" class="error-text">
-              Brand is required
+              Thương hiệu là bắt buộc
             </div>
           </div>
-
-          <div class="form-group">
-            <label for="price">Price *</label>
-            <input 
-              type="number" 
-              id="price" 
-              formControlName="price" 
-              placeholder="0.00"
-              step="0.01"
-              min="0"
-              [class.invalid]="productForm.get('price')?.invalid && productForm.get('price')?.touched"
-            >
+          <div class="form-group" style="flex:1;">
+            <label for="price">Giá *</label>
+            <div class="input-group">
+              <input 
+                type="text" 
+                id="price" 
+                formControlName="price" 
+                placeholder="Nhập giá (VNĐ)"
+                [value]="formatCurrency(productForm.get('price')?.value)"
+                (input)="onPriceInput($event)"
+                [class.invalid]="productForm.get('price')?.invalid && productForm.get('price')?.touched"
+                autocomplete="off"
+              >
+              <span class="input-group-text">₫</span>
+            </div>
             <div *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched" class="error-text">
-              Valid price is required
+              Giá hợp lệ là bắt buộc
             </div>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="description">Description *</label>
+          <label for="description">Mô tả *</label>
           <textarea 
             id="description" 
             formControlName="description" 
-            placeholder="Enter product description"
+            placeholder="Nhập mô tả sản phẩm"
             rows="4"
             [class.invalid]="productForm.get('description')?.invalid && productForm.get('description')?.touched"
           ></textarea>
           <div *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched" class="error-text">
-            Description is required and must be at least 10 characters
+            Mô tả là bắt buộc và phải có ít nhất 10 ký tự
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="stockQuantity">Stock Quantity *</label>
+            <label for="stockQuantity">Số lượng tồn kho *</label>
             <input 
               type="number" 
               id="stockQuantity" 
@@ -264,25 +267,25 @@
               [class.invalid]="productForm.get('stockQuantity')?.invalid && productForm.get('stockQuantity')?.touched"
             >
             <div *ngIf="productForm.get('stockQuantity')?.invalid && productForm.get('stockQuantity')?.touched" class="error-text">
-              Valid stock quantity is required
+              Số lượng tồn kho hợp lệ là bắt buộc
             </div>
           </div>
 
           <div class="form-group">
-            <label for="active">Status</label>
+            <label for="active">Trạng thái</label>
             <div class="checkbox-group">
               <input 
                 type="checkbox" 
                 id="active" 
                 formControlName="active"
               >
-              <label for="active">Active (available for purchase)</label>
+              <label for="active">Hoạt động (có thể mua)</label>
             </div>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="image">Product Image</label>
+          <label for="image">Hình ảnh sản phẩm</label>
           <input 
             type="file" 
             id="image" 
@@ -299,14 +302,14 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+          <button type="button" class="btn btn-secondary" (click)="closeForm()">Hủy</button>
           <button 
             type="submit" 
             class="btn btn-primary" 
             [disabled]="productForm.invalid || isLoading"
           >
             <span *ngIf="isLoading" class="spinner-small"></span>
-            {{ showAddForm ? 'Add Product' : 'Update Product' }}
+            {{ showAddForm ? 'Thêm sản phẩm' : 'Cập nhật sản phẩm' }}
           </button>
         </div>
       </form>

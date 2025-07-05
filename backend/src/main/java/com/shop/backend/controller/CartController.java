@@ -85,4 +85,17 @@ public class CartController {
         CartDto cart = cartService.removeCartItem(username, itemId);
         return ResponseEntity.ok(cart);
     }
+
+    // Xóa toàn bộ giỏ hàng
+    @DeleteMapping
+    public ResponseEntity<CartDto> clearCart(Authentication authentication) {
+        log.info("Clear cart called. Authentication: {}", authentication);
+        if (authentication == null) {
+            log.warn("No authentication found for clear cart");
+            return ResponseEntity.status(401).build();
+        }
+        String username = authentication.getName();
+        CartDto cart = cartService.clearCart(username);
+        return ResponseEntity.ok(cart);
+    }
 } 

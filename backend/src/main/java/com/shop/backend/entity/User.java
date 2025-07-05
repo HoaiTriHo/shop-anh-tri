@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.time.LocalDateTime;
 
 /**
  * User entity representing a user in the e-commerce system
@@ -80,6 +81,9 @@ public class User implements UserDetails {
 
     @Column(name = "is_credentials_non_expired", nullable = false)
     private boolean credentialsNonExpired = true;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
     /**
      * Constructor for creating a new user with basic information

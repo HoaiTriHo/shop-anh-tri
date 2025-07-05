@@ -2,8 +2,8 @@
   <!-- Header with search and filters -->
   <div class="products-header">
     <div class="header-content">
-      <h1>Our Products</h1>
-      <p>Discover amazing products at great prices</p>
+      <h1>Sản phẩm của chúng tôi</h1>
+      <p>Khám phá những sản phẩm tuyệt vời với giá cả hợp lý</p>
     </div>
     
     <div class="search-filter-bar">
@@ -12,7 +12,7 @@
         <input 
           type="text" 
           class="search-input" 
-          placeholder="Search products..."
+          placeholder="Tìm kiếm sản phẩm..."
           [(ngModel)]="searchQuery"
           (keyup.enter)="onSearch()"
         >
@@ -24,7 +24,7 @@
       <!-- Filter Button -->
       <button class="filter-btn" (click)="toggleFilters()">
         <i class="bi bi-funnel"></i>
-        Filters
+        Bộ lọc
       </button>
     </div>
   </div>
@@ -32,46 +32,46 @@
   <!-- Filters Panel -->
   <div class="filters-panel" [class.show]="showFilters">
     <div class="filter-group">
-      <label>Category:</label>
+      <label>Danh mục:</label>
       <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
-        <option value="">All Categories</option>
-        <option value="Electronics">Electronics</option>
-        <option value="Clothing">Clothing</option>
-        <option value="Books">Books</option>
-        <option value="Home">Home & Garden</option>
-        <option value="Sports">Sports</option>
+        <option value="">Tất cả danh mục</option>
+        <option value="Electronics">Điện tử</option>
+        <option value="Clothing">Thời trang</option>
+        <option value="Books">Sách</option>
+        <option value="Home">Nhà cửa & Vườn</option>
+        <option value="Sports">Thể thao</option>
       </select>
     </div>
 
     <div class="filter-group">
-      <label>Price Range:</label>
+      <label>Khoảng giá:</label>
       <select [(ngModel)]="selectedPrice" (change)="onPriceChange()">
-        <option value="">All Prices</option>
-        <option value="0-50">$0 - $50</option>
-        <option value="50-100">$50 - $100</option>
-        <option value="100+">$100+</option>
+        <option value="">Tất cả giá</option>
+        <option value="0-50">Dưới 500.000₫</option>
+        <option value="50-100">500.000₫ - 1.000.000₫</option>
+        <option value="100+">Trên 1.000.000₫</option>
       </select>
     </div>
 
     <div class="filter-group">
-      <label>Sort By:</label>
+      <label>Sắp xếp theo:</label>
       <select [(ngModel)]="selectedSort" (change)="onSortChange()">
-        <option value="name">Name</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-        <option value="newest">Newest</option>
+        <option value="name">Tên</option>
+        <option value="price-low">Giá: Thấp đến cao</option>
+        <option value="price-high">Giá: Cao đến thấp</option>
+        <option value="newest">Mới nhất</option>
       </select>
     </div>
 
     <button class="clear-filters-btn" (click)="clearFilters()">
-      Clear Filters
+      Xóa bộ lọc
     </button>
   </div>
 
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-container">
     <div class="spinner"></div>
-    <p>Loading products...</p>
+    <p>Đang tải sản phẩm...</p>
   </div>
 
   <!-- Products Grid -->
@@ -86,7 +86,7 @@
         >
         <div class="product-overlay">
           <button class="view-details-btn" (click)="viewProduct(product)">
-            View Details
+            Xem chi tiết
           </button>
         </div>
       </div>
@@ -105,20 +105,25 @@
             class="add-to-cart-btn" 
             [class.in-cart]="isInCart(product.id!)"
             [disabled]="isAddingToCart(product.id!)"
+            *ngIf="!isInCart(product.id!)"
             (click)="addToCart(product)"
           >
-            <span *ngIf="!isAddingToCart(product.id!) && !isInCart(product.id!)">
+            <span *ngIf="!isAddingToCart(product.id!)">
               <i class="bi bi-cart-plus"></i>
-              Add to Cart
-            </span>
-            <span *ngIf="!isAddingToCart(product.id!) && isInCart(product.id!)">
-              <i class="bi bi-check"></i>
-              In Cart ({{ getCartQuantity(product.id!) }})
+              Thêm vào giỏ
             </span>
             <span *ngIf="isAddingToCart(product.id!)">
               <i class="bi bi-hourglass-split"></i>
-              Adding...
+              Đang thêm...
             </span>
+          </button>
+          <button 
+            class="add-to-cart-btn in-cart"
+            *ngIf="isInCart(product.id!)"
+            (click)="goToCart()"
+          >
+            <i class="bi bi-cart-check"></i>
+            Đi đến giỏ hàng ({{ getCartQuantity(product.id!) }})
           </button>
         </div>
       </div>
@@ -132,7 +137,7 @@
         <!-- Previous button -->
         <li class="page-item" [class.disabled]="currentPage === 1">
           <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
-            Previous
+            Trước
           </button>
         </li>
 
@@ -146,14 +151,14 @@
         <!-- Next button -->
         <li class="page-item" [class.disabled]="currentPage === totalPages">
           <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
-            Next
+            Sau
           </button>
         </li>
       </ul>
     </nav>
 
     <div class="pagination-info">
-      Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, totalItems) }} of {{ totalItems }} products
+      Hiển thị {{ (currentPage - 1) * itemsPerPage + 1 }} đến {{ Math.min(currentPage * itemsPerPage, totalItems) }} trong tổng số {{ totalItems }} sản phẩm
     </div>
   </div>
 </div>
