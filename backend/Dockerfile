@@ -28,7 +28,7 @@ WORKDIR /app
 
 # Copy the built JAR file from build stage
 #COPY --from=build /app/build/libs/*.jar app.jar
-COPY --from=build /app/build/libs/*.jar .
+COPY --from=build /app/build/libs/*.jar ./
 
 # Change ownership to spring user
 RUN chown spring:spring app.jar
