@@ -92,16 +92,16 @@ INSERT INTO users (
 
 -- Insert sample products
 INSERT INTO products (name, description, price, stock_quantity, category, brand, image_url) VALUES
-('iPhone 15 Pro', 'Latest iPhone with advanced camera system and A17 Pro chip', 999.99, 50, 'Electronics', 'Apple', 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop&crop=center'),
-('Samsung Galaxy S24', 'Premium Android smartphone with AI features', 899.99, 45, 'Electronics', 'Samsung', 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop&crop=center'),
-('MacBook Pro 14"', 'Professional laptop with M3 chip for developers', 1999.99, 30, 'Electronics', 'Apple', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&crop=center'),
-('Nike Air Max 270', 'Comfortable running shoes with Air Max technology', 129.99, 100, 'Sports', 'Nike', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop&crop=center'),
-('Adidas Ultraboost 22', 'Premium running shoes with Boost technology', 179.99, 75, 'Sports', 'Adidas', 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&h=400&fit=crop&crop=center'),
-('Levi\'s 501 Jeans', 'Classic straight fit jeans in blue denim', 59.99, 200, 'Clothing', 'Levi\'s', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop&crop=center'),
-('Uniqlo T-Shirt', 'Comfortable cotton t-shirt in various colors', 19.99, 300, 'Clothing', 'Uniqlo', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=center'),
-('Sony WH-1000XM5', 'Premium noise-cancelling headphones', 349.99, 25, 'Electronics', 'Sony', 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop&crop=center'),
-('Dell XPS 13', 'Ultrabook with InfinityEdge display', 1299.99, 20, 'Electronics', 'Dell', 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop&crop=center'),
-('Yoga Mat', 'Non-slip yoga mat for home workouts', 29.99, 150, 'Sports', 'Generic', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=400&fit=crop&crop=center');
+('iPhone 15 Pro', 'Latest iPhone with advanced camera system and A17 Pro chip', 250000, 50, 'Electronics', 'Apple', 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop&crop=center'),
+('Samsung Galaxy S24', 'Premium Android smartphone with AI features', 220000, 45, 'Electronics', 'Samsung', 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop&crop=center'),
+('MacBook Pro 14"', 'Professional laptop with M3 chip for developers', 950000, 30, 'Electronics', 'Apple', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&crop=center'),
+('Nike Air Max 270', 'Comfortable running shoes with Air Max technology', 180000, 100, 'Sports', 'Nike', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop&crop=center'),
+('Adidas Ultraboost 22', 'Premium running shoes with Boost technology', 210000, 75, 'Sports', 'Adidas', 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&h=400&fit=crop&crop=center'),
+('Levi\'s 501 Jeans', 'Classic straight fit jeans in blue denim', 120000, 200, 'Clothing', 'Levi\'s', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop&crop=center'),
+('Uniqlo T-Shirt', 'Comfortable cotton t-shirt in various colors', 100000, 300, 'Clothing', 'Uniqlo', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=center'),
+('Sony WH-1000XM5', 'Premium noise-cancelling headphones', 350000, 25, 'Electronics', 'Sony', 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop&crop=center'),
+('Dell XPS 13', 'Ultrabook with InfinityEdge display', 800000, 20, 'Electronics', 'Dell', 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop&crop=center'),
+('Yoga Mat', 'Non-slip yoga mat for home workouts', 120000, 150, 'Sports', 'Generic', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=400&fit=crop&crop=center');
 
 -- Insert sample orders
 INSERT INTO orders (user_id, total_price, order_date) VALUES
