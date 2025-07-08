@@ -51,10 +51,16 @@ public class UserService {
             throw new RuntimeException("Email already exists");
         }
 
-        // Create new user with USER role
+        // Create new user with USER role and set all required fields
         User user = new User(username, email, passwordEncoder.encode(password), firstName, lastName);
         user.setRole("USER"); // Default role for new registrations
-        
+        user.setEnabled(true); // Ensure account is enabled
+        user.setAccountNonExpired(true); // Ensure account is not expired
+        user.setAccountNonLocked(true); // Ensure account is not locked
+        user.setCredentialsNonExpired(true); // Ensure credentials are not expired
+        // Do NOT set createdAt here, JPA will set it via @PrePersist
+
+        // Save user to DB
         return userRepository.save(user);
     }
 

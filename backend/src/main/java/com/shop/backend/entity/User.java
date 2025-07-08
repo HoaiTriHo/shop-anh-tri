@@ -86,6 +86,16 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
 
     /**
+     * Automatically set createdAt before inserting a new user.
+     * This ensures the created_at column is never null.
+     * This method is called by JPA before persisting a new entity.
+     */
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    /**
      * Constructor for creating a new user with basic information
      * This constructor is used when registering new users
      * 

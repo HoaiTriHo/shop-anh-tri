@@ -14,7 +14,11 @@ COPY build.gradle settings.gradle ./
 COPY src ./src
 
 # Build ứng dụng, tạo file JAR trong build/libs/
-RUN gradle build --no-daemon
+# Thêm flag --info để xem thông tin chi tiết về quá trình build
+RUN gradle build --no-daemon --info
+
+# Kiểm tra xem file JAR có được tạo không
+RUN ls -la build/libs/ || echo "No JAR files found in build/libs/"
 
 # Stage 2: Tạo image production nhẹ
 FROM eclipse-temurin:17-jre AS production
@@ -25,11 +29,9 @@ RUN groupadd -r spring && useradd -r -g spring spring
 # Đặt thư mục làm việc
 WORKDIR /app
 
-# Copy file JAR đã build từ stage trước, copy tất cả file JAR vào thư mục hiện tại
-COPY --from=build /app/build/libs/*.jar ./
-
-# Đổi tên file JAR (thường chỉ có 1 file) thành app.jar để các lệnh sau nhất quán
-RUN mv *.jar app.jar
+# Copy file JAR chính (không phải plain JAR) từ stage trước
+# Sử dụng pattern cụ thể để chỉ copy file JAR chính, không copy plain JAR
+COPY --from=build /app/build/libs/shop-backend-0.0.1-SNAPSHOT.jar ./app.jar
 
 # Chuyển quyền sở hữu file cho user spring
 RUN chown spring:spring app.jar

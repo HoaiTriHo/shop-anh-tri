@@ -55,9 +55,11 @@ SET @col := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 
 SET @sql := IF(@col = 0, 'ALTER TABLE orders ADD COLUMN payment_status VARCHAR(20) NOT NULL DEFAULT "PENDING";', 'SELECT 1;');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
-CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id);
-CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
-CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
-CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders(payment_status); 
+-- Chỉ tạo index cho các cột mới (status, payment_status)
+SET @idx := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_NAME = 'orders' AND INDEX_NAME = 'idx_orders_status');
+SET @sql := IF(@idx = 0, 'CREATE INDEX idx_orders_status ON orders(status);', 'SELECT 1;');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @idx := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_NAME = 'orders' AND INDEX_NAME = 'idx_orders_payment_status');
+SET @sql := IF(@idx = 0, 'CREATE INDEX idx_orders_payment_status ON orders(payment_status);', 'SELECT 1;');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt; 

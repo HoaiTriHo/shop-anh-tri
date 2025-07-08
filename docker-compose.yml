@@ -25,8 +25,14 @@ services:
       # Persist database data
       - mysql_data:/var/lib/mysql
       
-      # Custom MySQL configuration
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Mount all SQL scripts in order of execution
+      # MySQL will execute files in alphabetical order, so we use numbered prefixes
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./mysql/create-orders-only.sql:/docker-entrypoint-initdb.d/02-create-orders.sql
+      - ./mysql/safe-update-orders.sql:/docker-entrypoint-initdb.d/03-safe-update-orders.sql
+      - ./mysql/update-orders-schema.sql:/docker-entrypoint-initdb.d/04-update-orders-schema.sql
+      - ./mysql/update-product-images.sql:/docker-entrypoint-initdb.d/05-update-product-images.sql
+      - ./mysql/add-more-products.sql:/docker-entrypoint-initdb.d/06-add-more-products.sql
     networks:
       - shop-network
 

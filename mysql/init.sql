@@ -80,6 +80,16 @@ INSERT INTO users (username, email, password, first_name, last_name, role, creat
 ('john_doe', 'john@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 'John', 'Doe', 'USER', NOW()),
 ('jane_smith', 'jane@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', 'Jane', 'Smith', 'USER', NOW());
 
+-- Thêm user admin 'global' (tự động tạo khi init DB)
+INSERT INTO users (
+    id, username, email, password, first_name, last_name, phone_number, address, role,
+    is_enabled, is_account_non_expired, is_account_non_locked, is_credentials_non_expired, created_at, updated_at
+) VALUES (
+    4, 'global', 'hoaitri789@gmail.com', '$2a$10$3GqG5oHaC1YYB/DGm0VWTeqNyd6k.nr5.ko.k5e9/RpyysXet35.e',
+    'global', 'global', NULL, NULL, 'ADMIN',
+    1, 1, 1, 1, '2025-07-08 07:29:30', '2025-07-08 07:30:12'
+);
+
 -- Insert sample products
 INSERT INTO products (name, description, price, stock_quantity, category, brand, image_url) VALUES
 ('iPhone 15 Pro', 'Latest iPhone with advanced camera system and A17 Pro chip', 999.99, 50, 'Electronics', 'Apple', 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop&crop=center'),
@@ -109,7 +119,7 @@ INSERT INTO order_products (order_id, product_id) VALUES
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Create indexes for better performance
-CREATE INDEX idx_products_price_range ON products(price) WHERE is_active = TRUE;
+CREATE INDEX idx_products_price_range ON products(price);
 CREATE INDEX idx_orders_user_total ON orders(user_id, total_price);
 CREATE INDEX idx_order_products_order ON order_products(order_id);
 
