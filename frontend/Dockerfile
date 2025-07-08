@@ -12,7 +12,7 @@ COPY package*.json ./
 
 # Install dependencies
 # Using npm ci for faster, reliable builds in production
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
