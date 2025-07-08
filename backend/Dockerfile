@@ -25,9 +25,11 @@ RUN groupadd -r spring && useradd -r -g spring spring
 # Đặt thư mục làm việc
 WORKDIR /app
 
-# Copy file JAR đã build từ stage trước, đổi tên thành app.jar
-# Luôn dùng app.jar để các lệnh sau nhất quán
-COPY --from=build /app/build/libs/*.jar ./app.jar
+# Copy file JAR đã build từ stage trước, copy tất cả file JAR vào thư mục hiện tại
+COPY --from=build /app/build/libs/*.jar ./
+
+# Đổi tên file JAR (thường chỉ có 1 file) thành app.jar để các lệnh sau nhất quán
+RUN mv *.jar app.jar
 
 # Chuyển quyền sở hữu file cho user spring
 RUN chown spring:spring app.jar
