@@ -27,7 +27,8 @@ RUN groupadd -r spring && useradd -r -g spring spring
 WORKDIR /app
 
 # Copy the built JAR file from build stage
-COPY --from=build /app/build/libs/*.jar app.jar
+#COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/*.jar .
 
 # Change ownership to spring user
 RUN chown spring:spring app.jar
@@ -46,7 +47,9 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
 ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseContainerSupport"
 
 # Start the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+#ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar *.jar"]
+
 
 # Stage 3: Development stage (optional)
 FROM gradle:8.4-jdk17 AS development
