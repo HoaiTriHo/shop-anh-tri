@@ -28,11 +28,8 @@ import { ProfileComponent } from './user/profile/profile.component';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    AppRoutingModule,
-    AuthModule,
-    ProductModule,
-    CartModule,
-    AdminModule
+    AppRoutingModule
+    // Đã bỏ các module lazy load: AuthModule, ProductModule, CartModule, AdminModule
   ],
   providers: [
     {

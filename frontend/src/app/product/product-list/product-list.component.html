@@ -35,11 +35,7 @@
       <label>Danh mục:</label>
       <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
         <option value="">Tất cả danh mục</option>
-        <option value="Electronics">Điện tử</option>
-        <option value="Clothing">Thời trang</option>
-        <option value="Books">Sách</option>
-        <option value="Home">Nhà cửa & Vườn</option>
-        <option value="Sports">Thể thao</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
       </select>
     </div>
 

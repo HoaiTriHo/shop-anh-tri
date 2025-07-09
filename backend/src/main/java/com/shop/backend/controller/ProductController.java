@@ -1,6 +1,7 @@
 package com.shop.backend.controller;
 
 import com.shop.backend.dto.ProductDto;
+import com.shop.backend.dto.CategoryCountDto;
 import com.shop.backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -159,5 +160,14 @@ public class ProductController {
     public ResponseEntity<List<String>> getAllCategories() {
         List<String> categories = productService.getAllCategories();
         return ResponseEntity.ok(categories);
+    }
+
+    /**
+     * Get product count by category (public access)
+     * @return List of category and count
+     */
+    @GetMapping("/category-count")
+    public ResponseEntity<List<CategoryCountDto>> getCategoryCounts() {
+        return ResponseEntity.ok(productService.getCategoryCounts());
     }
 } 

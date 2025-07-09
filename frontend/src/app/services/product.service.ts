@@ -90,6 +90,13 @@ export class ProductService {
   }
 
   /**
+   * Get category counts (số lượng sản phẩm từng loại)
+   */
+  getCategoryCounts(): Observable<{category: string, count: number}[]> {
+    return this.http.get<{category: string, count: number}[]>(`${this.API_URL}/category-count`);
+  }
+
+  /**
    * Get products with pagination, search, filter, and sort
    */
   getProducts(params: { page?: number; size?: number; query?: string; category?: string; price?: string; sort?: string }): Observable<any> {

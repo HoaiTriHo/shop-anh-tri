@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { Product } from '../../models/product.model';
 import { DOCUMENT } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-product-list',
@@ -29,6 +30,7 @@ export class ProductListComponent implements OnInit {
   // Loading states
   loading = false;
   addingToCart: { [key: number]: boolean } = {};
+  categories: string[] = [];
 
   // Math object for template
   Math = Math;
@@ -38,11 +40,28 @@ export class ProductListComponent implements OnInit {
     private cartService: CartService,
     private authService: AuthService,
     private router: Router,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.loadProducts();
+    // Lấy danh sách categories động từ API
+    this.productService.getAllCategories().subscribe({
+      next: (cats) => {
+        this.categories = cats;
+      },
+      error: (err) => {
+        console.error('Lỗi khi lấy danh mục:', err);
+      }
+    });
+    // Đọc query param category nếu có
+    this.route.queryParams.subscribe(params => {
+      if (params['category']) {
+        this.selectedCategory = params['category'];
+        this.showFilters = true; // Tự động mở bộ lọc khi có category truyền qua
+      }
+      this.loadProducts();
+    });
   }
 
   /**
@@ -160,7 +179,7 @@ export class ProductListComponent implements OnInit {
       // Store the current page info for better UX after login
       localStorage.setItem('redirectAfterLogin', '/products');
       // Redirect to login page
-      this.router.navigate(['/login']);
+      this.router.navigate(['/auth/login']);
       return;
     }
 

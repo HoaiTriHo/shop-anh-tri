@@ -66,7 +66,7 @@ export class ProductDetailComponent implements OnInit {
       console.log('User not logged in, redirecting to login page');
       // Store the current page info for better UX after login
       localStorage.setItem('redirectAfterLogin', `/products/${this.product.id}`);
-      this.router.navigate(['/login']);
+      this.router.navigate(['/auth/login']);
       return;
     }
 
@@ -92,7 +92,7 @@ export class ProductDetailComponent implements OnInit {
         if (error.status === 401) {
           // Token expired or invalid, redirect to login
           this.authService.logout();
-          this.router.navigate(['/login']);
+          this.router.navigate(['/auth/login']);
         }
       }
     });
@@ -109,7 +109,7 @@ export class ProductDetailComponent implements OnInit {
       console.log('User not logged in, redirecting to login page');
       // Store the current page info for better UX after login
       localStorage.setItem('redirectAfterLogin', `/products/${this.product.id}`);
-      this.router.navigate(['/login']);
+      this.router.navigate(['/auth/login']);
       return;
     }
 
@@ -131,7 +131,7 @@ export class ProductDetailComponent implements OnInit {
         if (error.status === 401) {
           // Token expired or invalid, redirect to login
           this.authService.logout();
-          this.router.navigate(['/login']);
+          this.router.navigate(['/auth/login']);
         }
       }
     });

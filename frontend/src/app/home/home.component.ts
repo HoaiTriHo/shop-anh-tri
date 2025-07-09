@@ -16,9 +16,9 @@ export class HomeComponent implements OnInit {
   addingToCart: { [key: number]: boolean } = {};
   
   categories = [
-    { name: 'Electronics', icon: 'bi-laptop', count: 25 },
-    { name: 'Clothing', icon: 'bi-tshirt', count: 18 },
-    { name: 'Books', icon: 'bi-book', count: 32 }
+    { name: 'Electronics', icon: 'bi-laptop', count: 0 },
+    { name: 'Clothing', icon: 'bi-tshirt', count: 0 },
+    { name: 'Books', icon: 'bi-book', count: 0 }
   ];
 
   constructor(
@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFeaturedProducts();
+    this.loadCategoryCounts();
   }
 
   /**
@@ -51,6 +52,24 @@ export class HomeComponent implements OnInit {
   }
 
   /**
+   * Load số lượng sản phẩm từng loại (category) từ API backend
+   */
+  loadCategoryCounts(): void {
+    this.productService.getCategoryCounts().subscribe({
+      next: (counts) => {
+        // Cập nhật lại count cho từng category
+        this.categories.forEach(cat => {
+          const found = counts.find(c => c.category.toLowerCase() === cat.name.toLowerCase());
+          cat.count = found ? found.count : 0;
+        });
+      },
+      error: (err) => {
+        console.error('Lỗi khi lấy số lượng sản phẩm từng category:', err);
+      }
+    });
+  }
+
+  /**
    * Add product to cart
    */
   addToCart(product: Product): void {
@@ -59,7 +78,7 @@ export class HomeComponent implements OnInit {
       console.log('User not logged in, redirecting to login page');
       // Store the current page info for better UX after login
       localStorage.setItem('redirectAfterLogin', '/');
-      this.router.navigate(['/login']);
+      this.router.navigate(['/auth/login']);
       return;
     }
 
@@ -82,7 +101,7 @@ export class HomeComponent implements OnInit {
         if (error.status === 401) {
           // Token expired or invalid, redirect to login
           this.authService.logout();
-          this.router.navigate(['/login']);
+          this.router.navigate(['/auth/login']);
         }
       }
     });

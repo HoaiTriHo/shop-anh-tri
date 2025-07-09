@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Comparator;
+import com.shop.backend.dto.CategoryCountDto;
 
 /**
  * Service class for Product business logic
@@ -198,6 +199,20 @@ public class ProductService {
      */
     public List<String> getAllCategories() {
         return productRepository.findAllCategories();
+    }
+
+    /**
+     * Get product count by category
+     * @return List of category and count
+     */
+    public List<CategoryCountDto> getCategoryCounts() {
+        List<String> categories = productRepository.findAllCategories();
+        List<CategoryCountDto> result = new java.util.ArrayList<>();
+        for (String cat : categories) {
+            long count = productRepository.countByCategory(cat);
+            result.add(new CategoryCountDto(cat, count));
+        }
+        return result;
     }
 
     /**
