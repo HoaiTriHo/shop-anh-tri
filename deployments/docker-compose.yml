@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: shop-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: shop
+      MYSQL_INITDB_SKIP_TZINFO: 1
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ../mysql/create-orders-only.sql:/docker-entrypoint-initdb.d/02-create-orders.sql
+      - ../mysql/safe-update-orders.sql:/docker-entrypoint-initdb.d/03-safe-update-orders.sql
+      - ../mysql/update-orders-schema.sql:/docker-entrypoint-initdb.d/04-update-orders-schema.sql
+      - ../mysql/update-product-images.sql:/docker-entrypoint-initdb.d/05-update-product-images.sql
+      - ../mysql/add-more-products.sql:/docker-entrypoint-initdb.d/06-add-more-products.sql
+    networks:
+      - shop-network
+
+  backend:
+    image: hotri/shop-app:backend
+    container_name: shop-backend
+    restart: unless-stopped
+    environment:
+      SPRING_MAIN_ALLOW_CIRCULAR_REFERENCES: "true"
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/shop?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "false"
+      SERVER_PORT: 8080
+      JWT_SECRET: your-super-long-secret-key-here-make-it-at-least-64-characters-1234567890abcdef
+      JWT_EXPIRATION: 86400000
+      LOGGING_LEVEL_COM_SHOP_BACKEND: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - shop-network
+    volumes:
+      - ../uploads:/app/uploads
+
+  frontend:
+    image: hotri/shop-app:frontend
+    container_name: shop-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - shop-network
+    environment:
+      - API_URL=http://192.168.104.124:8080
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  shop-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 

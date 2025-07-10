@@ -69,7 +69,6 @@ services:
       LOGGING_LEVEL_COM_SHOP_BACKEND: INFO
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
     ports:
-      # Expose backend port for external access
       - "8080:8080"
     depends_on:
       - db
@@ -95,7 +94,7 @@ services:
     networks:
       - shop-network
     environment:
-      - API_URL=http://localhost:8090
+      - API_URL=http://localhost:8080
 
 # Define volumes for data persistence
 volumes:
