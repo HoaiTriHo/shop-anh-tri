@@ -94,6 +94,8 @@ services:
       - backend
     networks:
       - shop-network
+    environment:
+      - API_URL=http://localhost:8090
 
 # Define volumes for data persistence
 volumes:

@@ -31,10 +31,18 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy built application from build stage
 COPY --from=build /app/dist/shop-frontend /usr/share/nginx/html
 
+# Copy template env file
+COPY src/assets/env.template.js /usr/share/nginx/html/assets/env.template.js
+
+# Add entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Expose port 3000 for the application
 EXPOSE 3000
 
 # Start Nginx
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
 # Stage 3: Development stage (optional)
