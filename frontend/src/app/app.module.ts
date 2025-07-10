@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
+import { RootRedirectComponent } from './root-redirect/root-redirect.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 // Feature modules
@@ -20,6 +21,7 @@ import { ProfileComponent } from './user/profile/profile.component';
   declarations: [
     AppComponent,
     HomeComponent,
+    RootRedirectComponent,
     MyOrdersComponent,
     ProfileComponent
   ],

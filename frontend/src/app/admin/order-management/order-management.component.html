@@ -87,8 +87,8 @@
             </button>
             <select 
               class="status-select" 
-              [value]="order.status"
-              (change)="onStatusChange($event, order)"
+              [(ngModel)]="order.status"
+              (ngModelChange)="onStatusChange($event, order)"
               [disabled]="(order.status + '') === 'CUSTOMER_CANCELLED'"
             >
               <option *ngFor="let status of statusOptions.slice(1)" [value]="status.value">

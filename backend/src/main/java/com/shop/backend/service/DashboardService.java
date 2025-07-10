@@ -62,12 +62,13 @@ public class DashboardService {
         for (int i = 6; i >= 0; i--) {
             days.add(today.minusDays(i));
         }
-        // Group doanh thu theo ngày
+        // Group doanh thu theo ngày (theo múi giờ VN)
         List<Map<String, Object>> result = new ArrayList<>();
         for (LocalDate day : days) {
             BigDecimal sum = orders.stream()
                     .filter(o -> (o.getStatus() == OrderStatus.DELIVERED || o.getStatus() == OrderStatus.CONFIRMED)
-                            && o.getOrderDate().toLocalDate().equals(day))
+                        // Chuyển orderDate sang múi giờ VN (UTC+7) trước khi lấy ngày
+                        && o.getOrderDate().plusHours(7).toLocalDate().equals(day))
                     .map(Order::getTotalPrice)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             Map<String, Object> entry = new HashMap<>();

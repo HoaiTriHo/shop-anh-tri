@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { RoleRoutingService } from './services/role-routing.service';
 import { Subscription } from 'rxjs';
 import { CartService } from './services/cart.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -33,6 +35,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private roleRoutingService: RoleRoutingService,
     private cartService: CartService
   ) {}
 
@@ -40,6 +43,8 @@ export class AppComponent implements OnInit, OnDestroy {
     // Subscribe to authentication changes
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.updateAuthState(user);
+      // Handle role-based routing when auth state changes
+      this.roleRoutingService.handleRoleBasedRouting();
     });
     
     // Initialize authentication state
@@ -48,6 +53,13 @@ export class AppComponent implements OnInit, OnDestroy {
     // Subscribe to cart item count changes
     this.cartService.cartItemCount$.subscribe(count => {
       this.cartItemCount = count;
+    });
+
+    // Subscribe to route changes to handle role-based routing
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.roleRoutingService.handleRoleBasedRouting();
     });
   }
 

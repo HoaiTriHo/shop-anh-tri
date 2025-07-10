@@ -3,11 +3,11 @@ import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class UserOnlyGuard implements CanActivate {
+export class AdminGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate(): boolean {
-    // First check if user is logged in
+    // Check if user is logged in
     if (!this.auth.isLoggedIn()) {
       console.log('User not logged in, redirecting to login page');
       // Store current URL for redirect after login
@@ -16,7 +16,14 @@ export class UserOnlyGuard implements CanActivate {
       return false;
     }
     
-    // User is logged in - allow access (admin can access user routes too)
+    // Check if user is admin
+    if (!this.auth.isAdmin()) {
+      console.log('User is not admin, redirecting to home page');
+      this.router.navigate(['/home']);
+      return false;
+    }
+    
+    // User is logged in and is admin - allow access
     return true;
   }
 } 
