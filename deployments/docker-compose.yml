@@ -58,7 +58,7 @@ services:
     networks:
       - shop-network
     environment:
-      - API_URL=http://localhost:8080
+      - API_URL=http://20.2.29.92:8080
 
 volumes:
   mysql_data:
