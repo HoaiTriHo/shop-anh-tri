@@ -59,6 +59,7 @@ services:
       - shop-network
     environment:
       - API_URL=https://hoaitri.duckdns.org
+    command: ng serve --host 0.0.0.0
 
 volumes:
   mysql_data:
