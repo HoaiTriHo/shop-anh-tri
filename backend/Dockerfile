@@ -32,6 +32,8 @@ WORKDIR /app
 # Copy file JAR chính (không phải plain JAR) từ stage trước
 # Sử dụng pattern cụ thể để chỉ copy file JAR chính, không copy plain JAR
 COPY --from=build /app/build/libs/shop-backend-0.0.1-SNAPSHOT.jar ./app.jar
+# Copy file cấu hình application.properties vào đúng vị trí để Spring Boot đọc
+COPY src/main/resources/application.properties ./application.properties
 
 # Chuyển quyền sở hữu file cho user spring
 RUN chown spring:spring app.jar

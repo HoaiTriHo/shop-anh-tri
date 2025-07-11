@@ -58,9 +58,6 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "false"
       
-      # Server configuration
-      SERVER_PORT: 8080
-      
       # JWT configuration
       JWT_SECRET: your-super-long-secret-key-here-make-it-at-least-64-characters-1234567890abcdef
       JWT_EXPIRATION: 86400000
@@ -69,7 +66,7 @@ services:
       LOGGING_LEVEL_COM_SHOP_BACKEND: INFO
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
     ports:
-      - "8080:8080"
+      - "8080:8888"
     depends_on:
       - db
     networks:
@@ -94,7 +91,7 @@ services:
     networks:
       - shop-network
     environment:
-      - API_URL=http://localhost:8080
+      - API_URL=http://192.168.76.83:3001
 
 # Define volumes for data persistence
 volumes:

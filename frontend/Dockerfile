@@ -63,5 +63,5 @@ COPY . .
 # Expose port 4200 for Angular dev server
 EXPOSE 4200
 
-# Start Angular development server
-CMD ["npm", "start"] 
+# Start Angular development server with host 0.0.0.0 for external access
+CMD ["npm", "start", "--", "--host", "0.0.0.0", "--port", "3000"] 
