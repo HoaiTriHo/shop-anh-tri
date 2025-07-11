@@ -58,7 +58,7 @@ services:
     networks:
       - shop-network
     environment:
-      - API_URL=http://192.168.76.83:8080
+      - API_URL=https://hoaitri.duckdns.org
 volumes:
   mysql_data:
     driver: local
