@@ -147,9 +147,9 @@ export class OrderManagementComponent implements OnInit {
     this.selectedOrder = null;
   }
 
-  onStatusChange(event: Event, order: Order): void {
-    const selectElement = event.target as HTMLSelectElement;
-    const newStatus = selectElement.value;
+  // Sửa lại hàm này để nhận trực tiếp newStatus thay vì event
+  onStatusChange(newStatus: string, order: Order): void {
+    // Gọi hàm updateOrderStatus với status mới
     this.updateOrderStatus(order, newStatus);
   }
 
